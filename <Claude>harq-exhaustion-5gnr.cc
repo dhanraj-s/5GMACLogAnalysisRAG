@@ -82,14 +82,28 @@ void NotifyUeConnectionReleased(std::string context,
             << std::endl;
 }
 
+void DlPacketSent(std::string ctx, Ptr<const Packet> p)
+{
+    std::cout << Simulator::Now().GetSeconds()
+              << "s [APP] DL packet SENT size=" << p->GetSize() << "\n";
+}
+
+void DlPacketReceived(std::string ctx, Ptr<const Packet> p,
+                      const Address& from, const Address& to)
+{
+    std::cout << Simulator::Now().GetSeconds()
+              << "s [APP] DL packet RECEIVED size=" << p->GetSize() << "\n";
+}
+
 int main(int argc, char* argv[])
 {
   // ── Parameters ────────────────────────────────────────────────
   uint16_t numerologyBwp1  = 1;        // μ=1 → 30 kHz SCS (FR1)
   double   centralFreqHz   = 3.5e9;    // n78 band
   double   bandwidthHz     = 20e6;
-  double   totalTxPower    = 1.0;      // intentionally low → drives NACKs
-  double   ueNoiseFigure   = 25.0;     // intentionally high → drives NACKs
+  double   totalTxPower    = 43.0;      
+  double   ueNoiseFigure   = 9.0;
+  double   distance        = 500.0;  
 
   CommandLine cmd(__FILE__);
   cmd.AddValue("numerology",   "NR numerology (0-4)",  numerologyBwp1);
@@ -97,6 +111,7 @@ int main(int argc, char* argv[])
   cmd.AddValue("bandwidth",    "Bandwidth Hz",          bandwidthHz);
   cmd.AddValue("txPower",      "gNB TX power dBm",      totalTxPower);
   cmd.AddValue("noiseFigure",  "UE noise figure dB",    ueNoiseFigure);
+  cmd.AddValue("distance", "UE<-->gNB distance m", distance);
   cmd.Parse(argc, argv);
 
   NS_ABORT_IF(centralFreqHz < 0.5e9 || centralFreqHz > 100e9);
@@ -114,8 +129,8 @@ int main(int argc, char* argv[])
   MobilityHelper mobility;
   mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
   Ptr<ListPositionAllocator> posAlloc = CreateObject<ListPositionAllocator>();
-  posAlloc->Add(Vector(0.0,     0.0, 10.0));  // gNB
-  posAlloc->Add(Vector(10000.0, 0.0,  1.5));  // UE very far
+  posAlloc->Add(Vector(0.0,     0.0, 25.0));  // gNB
+  posAlloc->Add(Vector(distance, 0.0,  1.5));  // UE very far
   mobility.SetPositionAllocator(posAlloc);
   mobility.Install(gnbNodes);
   mobility.Install(ueNodes);
@@ -146,7 +161,7 @@ int main(int argc, char* argv[])
   // This replaces both BandwidthPartInfo::UMi_StreetCanyon and
   // nrHelper->InitializeOperationBand(), which no longer exist.
   Ptr<NrChannelHelper> channelHelper = CreateObject<NrChannelHelper>();
-  channelHelper->ConfigureFactories("UMi", "Default", "ThreeGpp");
+  channelHelper->ConfigureFactories("UMa", "Default", "ThreeGpp");
   channelHelper->SetChannelConditionModelAttribute("UpdatePeriod", TimeValue(MilliSeconds(0)));
   channelHelper->SetPathlossAttribute("ShadowingEnabled", BooleanValue(false));
   channelHelper->AssignChannelsToBands({band});   // ← replaces InitializeOperationBand
@@ -181,11 +196,11 @@ int main(int argc, char* argv[])
   NetDeviceContainer ueDevs  = nrHelper->InstallUeDevice(ueNodes,  allBwps);
 
   // Set numerology and TX power per BWP (case iii pattern from reference)
-  double x = std::pow(10.0, totalTxPower / 10.0);
+  //double x = std::pow(10.0, totalTxPower / 10.0);
   NrHelper::GetGnbPhy(gnbDevs.Get(0), 0)
       ->SetAttribute("Numerology", UintegerValue(numerologyBwp1));
   NrHelper::GetGnbPhy(gnbDevs.Get(0), 0)
-      ->SetAttribute("TxPower", DoubleValue(10 * std::log10(x)));
+      ->SetAttribute("TxPower", DoubleValue(totalTxPower));
 
   // ── Internet stack ────────────────────────────────────────────
   InternetStackHelper internet;
@@ -206,15 +221,13 @@ int main(int argc, char* argv[])
   UdpServerHelper sink(dlPort);
   ApplicationContainer serverApps = sink.Install(ueNodes.Get(0));
 
-  UdpClientHelper client;
+  
+  UdpClientHelper client(ueIpIface.GetAddress(0), dlPort);
   client.SetAttribute("MaxPackets", UintegerValue(0xFFFFFFFF));
   client.SetAttribute("PacketSize", UintegerValue(1024));
   client.SetAttribute("Interval",   TimeValue(MilliSeconds(1)));
-  client.SetAttribute("Remote",
-      AddressValue(addressUtils::ConvertToSocketAddress(
-          ueIpIface.GetAddress(0), dlPort)));
-  ApplicationContainer clientApps = client.Install(remoteHost);
-
+  ApplicationContainer clientApps = client.Install(remoteHost); 
+  
   Time udpStart = MilliSeconds(400);
   Time simStop  = MilliSeconds(10000);
 
@@ -243,9 +256,23 @@ int main(int argc, char* argv[])
   OaiNrLogger logger("my-sim.log");
   logger.Connect();
 
+
+  Config::Connect(
+    "/NodeList/" + std::to_string(remoteHost->GetId()) + "/ApplicationList/0/$ns3::UdpClient/Tx",
+    MakeCallback(&DlPacketSent));
+
+  Config::Connect(
+    "/NodeList/" + std::to_string(ueNodes.Get(0)->GetId()) + "/ApplicationList/0/$ns3::UdpServer/RxWithAddresses",
+    MakeCallback(&DlPacketReceived));
+
   // ── Run ───────────────────────────────────────────────────────
   Simulator::Stop(simStop);
   Simulator::Run();
+
+  Ptr<UdpServer> udpServer = DynamicCast<UdpServer>(serverApps.Get(0));
+  std::cout << "Total DL packets received: " << udpServer->GetReceived() << "\n";
+  std::cout << "Total DL packets lost:     " << udpServer->GetLost()     << "\n";
+
   Simulator::Destroy();
 
   return 0;
