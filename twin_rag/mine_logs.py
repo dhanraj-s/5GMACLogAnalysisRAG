@@ -1,6 +1,7 @@
 from drain3 import TemplateMiner
 from drain3.template_miner_config import TemplateMinerConfig
 import re
+from nltk.stem import PorterStemmer
 
 def clean_log_line(line):
     ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
@@ -16,8 +17,16 @@ def clean_log_line(line):
 
     return line.strip()
 
+stemmer = PorterStemmer()
+
 def score_templates(template_freq, templates, log_lines):
     total_lines = len(log_lines)
+
+    # for temporal scoring. events appearing first are more likely to be root causes.
+    first_occurrence = {}
+    for i, template in enumerate(templates):
+        if template not in first_occurrence:
+            first_occurrence[template] = i
 
     SIGNIFICANT = [
         "fail", "invalid", "loss", "drop",
@@ -26,18 +35,26 @@ def score_templates(template_freq, templates, log_lines):
         "retx", "nack", "corrupt"
     ]
 
+    sig_stems = set(stemmer.stem(w) for w in SIGNIFICANT)
+    sig_stems.add("failure")
+
     scores = {}
 
     for template, count in template_freq.items():
 
         rarity_score = 1 - (count / total_lines)
 
+        template_words = re.findall(r'\b[a-z]+\b', template.lower())
+        template_stems = set(stemmer.stem(w) for w in template_words)
+
         significance_score = sum(
-            1 for word in SIGNIFICANT
-            if word in template.lower()
+            1 for word in sig_stems
+            if word in template_stems
         )
         
-        scores[template] = rarity_score * (significance_score + 1)
+        position = first_occurrence.get(template, total_lines)
+        temporal_score = 1 - (position/total_lines)
+        scores[template] = rarity_score * (significance_score + 1) * (1 + temporal_score)
 
     return sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
