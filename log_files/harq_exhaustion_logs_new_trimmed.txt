@@ -1,0 +1,221 @@
+[PHY  ][0.379000] SLOT DATA     | Frame 37 Sub 9 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.379500] SLOT DATA     | Frame 37 Sub 9 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.380000] SLOT DATA     | Frame 38 Sub 0 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.380036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[RRC  ][0.380036] MIB RX        | IMSI 1 | Cell 1 | RNTI 1
+[PHY  ][0.380500] SLOT DATA     | Frame 38 Sub 0 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.381000] SLOT DATA     | Frame 38 Sub 1 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 11
+[PHY  ][0.381500] SLOT DATA     | Frame 38 Sub 1 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.382000] SLOT DATA     | Frame 38 Sub 2 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.382500] SLOT DATA     | Frame 38 Sub 2 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.383000] SLOT DATA     | Frame 38 Sub 3 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.383500] SLOT DATA     | Frame 38 Sub 3 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.384000] SLOT DATA     | Frame 38 Sub 4 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.384500] SLOT DATA     | Frame 38 Sub 4 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.385000] SLOT DATA     | Frame 38 Sub 5 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.385036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[RRC  ][0.385036] SIB1 RX       | IMSI 1 | Cell 1 | RNTI 1
+[PHY  ][0.385500] SLOT DATA     | Frame 38 Sub 5 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.386000] SLOT DATA     | Frame 38 Sub 6 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.386500] SLOT DATA     | Frame 38 Sub 6 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.387000] SLOT DATA     | Frame 38 Sub 7 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.387500] SLOT DATA     | Frame 38 Sub 7 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.388000] SLOT DATA     | Frame 38 Sub 8 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.388500] SLOT DATA     | Frame 38 Sub 8 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.389000] SLOT DATA     | Frame 38 Sub 9 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.389500] SLOT DATA     | Frame 38 Sub 9 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.390000] SLOT DATA     | Frame 39 Sub 0 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.390036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[RRC  ][0.390036] MIB RX        | IMSI 1 | Cell 1 | RNTI 1
+[PHY  ][0.390500] SLOT DATA     | Frame 39 Sub 0 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.391000] SLOT DATA     | Frame 39 Sub 1 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.391500] SLOT DATA     | Frame 39 Sub 1 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.392000] SLOT DATA     | Frame 39 Sub 2 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.392500] SLOT DATA     | Frame 39 Sub 2 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.393000] SLOT DATA     | Frame 39 Sub 3 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.393500] SLOT DATA     | Frame 39 Sub 3 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.394000] SLOT DATA     | Frame 39 Sub 4 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.394500] SLOT DATA     | Frame 39 Sub 4 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.395000] SLOT DATA     | Frame 39 Sub 5 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.395036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[RRC  ][0.395036] SIB1 RX       | IMSI 1 | Cell 1 | RNTI 1
+[PHY  ][0.395500] SLOT DATA     | Frame 39 Sub 5 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.396000] SLOT DATA     | Frame 39 Sub 6 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.396500] SLOT DATA     | Frame 39 Sub 6 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.397000] SLOT DATA     | Frame 39 Sub 7 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.397500] SLOT DATA     | Frame 39 Sub 7 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.398000] SLOT DATA     | Frame 39 Sub 8 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.398500] SLOT DATA     | Frame 39 Sub 8 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.399000] SLOT DATA     | Frame 39 Sub 9 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.399500] SLOT DATA     | Frame 39 Sub 9 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.400000] UE MEAS       | RNTI 1 | RSRP -137.41 dBm | RSRQ 0.00 dB | Serv Y CC 0
+0.4s [APP] DL packet SENT size=1012
+[PHY  ][0.400000] SLOT DATA     | Frame 40 Sub 0 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[PHY  ][0.400036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[RRC  ][0.400036] MIB RX        | IMSI 1 | Cell 1 | RNTI 1
+[MAC  ][0.400500] DL SCHED      | Frame 40 Slot 1 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 15
+[PHY  ][0.400500] SLOT DATA     | Frame 40 Sub 0 Slot 1 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+0.401s [APP] DL packet SENT size=1012
+[MAC  ][0.401000] DL SCHED      | Frame 40 Slot 0 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 14
+[PHY  ][0.401000] SLOT DATA     | Frame 40 Sub 1 Slot 0 | Cell 1 BWP 0 | ActiveUE 0 | UsedRE 0 UsedSym 0 | AvailRB 53 AvailSym 12
+[MAC  ][0.401500] DL SCHED      | Frame 40 Slot 1 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 13
+[PHY  ][0.401500] SLOT DATA     | Frame 40 Sub 1 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.401536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.401536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.401964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.401964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.402s [APP] DL packet SENT size=1012
+[MAC  ][0.402000] DL SCHED      | Frame 40 Slot 0 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 12
+[PHY  ][0.402000] SLOT DATA     | Frame 40 Sub 2 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.402036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.402036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.402464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.402464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+[MAC  ][0.402500] DL SCHED      | Frame 40 Slot 1 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 11
+[PHY  ][0.402500] SLOT DATA     | Frame 40 Sub 2 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.402536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.402536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.402964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.402964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.403s [MAC] NR HARQ NACK #1 for RNTI=1 ProcessID=15
+[MAC  ][0.403000] DL HARQ       | RNTI 1 | PID 15 | NACK | Retx 0
+0.403s [APP] DL packet SENT size=1012
+[PHY  ][0.403000] SLOT DATA     | Frame 40 Sub 3 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.403036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.403036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.403464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.403464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4035s [MAC] NR HARQ NACK #2 for RNTI=1 ProcessID=14
+[MAC  ][0.403500] DL HARQ       | RNTI 1 | PID 14 | NACK | Retx 0
+[PHY  ][0.403500] SLOT DATA     | Frame 40 Sub 3 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.403536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.403536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.403964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.403964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.404s [MAC] NR HARQ NACK #3 for RNTI=1 ProcessID=13
+[MAC  ][0.404000] DL HARQ       | RNTI 1 | PID 13 | NACK | Retx 0
+0.404s [APP] DL packet SENT size=1012
+[PHY  ][0.404000] SLOT DATA     | Frame 40 Sub 4 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.404036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.404036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.404464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.404464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4045s [MAC] NR HARQ NACK #4 for RNTI=1 ProcessID=12 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.404500] DL HARQ       | RNTI 1 | PID 12 | NACK | Retx 0
+[PHY  ][0.404500] SLOT DATA     | Frame 40 Sub 4 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.404536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.404536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.404964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.404964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.405s [MAC] NR HARQ NACK #5 for RNTI=1 ProcessID=11 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.405000] DL HARQ       | RNTI 1 | PID 11 | NACK | Retx 0
+0.405s [APP] DL packet SENT size=1012
+[PHY  ][0.405000] SLOT DATA     | Frame 40 Sub 5 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.405036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[RRC  ][0.405036] SIB1 RX       | IMSI 1 | Cell 1 | RNTI 1
+[PHY  ][0.405036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.405464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.405464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4055s [MAC] NR HARQ NACK #6 for RNTI=1 ProcessID=15 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.405500] DL HARQ       | RNTI 1 | PID 15 | NACK | Retx 1
+[PHY  ][0.405500] SLOT DATA     | Frame 40 Sub 5 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.405536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.405536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.405964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.405964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.406s [MAC] NR HARQ NACK #7 for RNTI=1 ProcessID=14 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.406000] DL HARQ       | RNTI 1 | PID 14 | NACK | Retx 1
+0.406s [APP] DL packet SENT size=1012
+[PHY  ][0.406000] SLOT DATA     | Frame 40 Sub 6 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.406036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.406036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.406464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.406464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4065s [MAC] NR HARQ NACK #8 for RNTI=1 ProcessID=13 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.406500] DL HARQ       | RNTI 1 | PID 13 | NACK | Retx 1
+[PHY  ][0.406500] SLOT DATA     | Frame 40 Sub 6 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.406536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.406536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.406964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.406964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.407s [MAC] NR HARQ NACK #9 for RNTI=1 ProcessID=12 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.407000] DL HARQ       | RNTI 1 | PID 12 | NACK | Retx 1
+0.407s [APP] DL packet SENT size=1012
+[PHY  ][0.407000] SLOT DATA     | Frame 40 Sub 7 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.407036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.407036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.407464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.407464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4075s [MAC] NR HARQ NACK #10 for RNTI=1 ProcessID=11 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.407500] DL HARQ       | RNTI 1 | PID 11 | NACK | Retx 1
+[PHY  ][0.407500] SLOT DATA     | Frame 40 Sub 7 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.407536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.407536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.407964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.407964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.408s [MAC] NR HARQ NACK #11 for RNTI=1 ProcessID=15 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.408000] DL HARQ       | RNTI 1 | PID 15 | NACK | Retx 2
+0.408s [APP] DL packet SENT size=1012
+[PHY  ][0.408000] SLOT DATA     | Frame 40 Sub 8 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.408036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.408036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.408464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.408464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4085s [MAC] NR HARQ NACK #12 for RNTI=1 ProcessID=14 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.408500] DL HARQ       | RNTI 1 | PID 14 | NACK | Retx 2
+[PHY  ][0.408500] SLOT DATA     | Frame 40 Sub 8 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.408536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.408536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.408964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.408964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.409s [MAC] NR HARQ NACK #13 for RNTI=1 ProcessID=13 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.409000] DL HARQ       | RNTI 1 | PID 13 | NACK | Retx 2
+0.409s [APP] DL packet SENT size=1012
+[PHY  ][0.409000] SLOT DATA     | Frame 40 Sub 9 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.409036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.409036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.409464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.409464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4095s [MAC] NR HARQ NACK #14 for RNTI=1 ProcessID=12 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.409500] DL HARQ       | RNTI 1 | PID 12 | NACK | Retx 2
+[PHY  ][0.409500] SLOT DATA     | Frame 40 Sub 9 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.409536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.409536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.409964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.409964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.41s [MAC] NR HARQ NACK #15 for RNTI=1 ProcessID=11 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.410000] DL HARQ       | RNTI 1 | PID 11 | NACK | Retx 2
+0.41s [APP] DL packet SENT size=1012
+[PHY  ][0.410000] SLOT DATA     | Frame 41 Sub 0 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.410036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[RRC  ][0.410036] MIB RX        | IMSI 1 | Cell 1 | RNTI 1
+[PHY  ][0.410036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.410464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.410464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.4105s [MAC] NR HARQ NACK #16 for RNTI=1 ProcessID=15 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.410500] DL HARQ       | RNTI 1 | PID 15 | NACK | Retx 3
+[MAC  ][0.410500] DL SCHED      | Frame 41 Slot 1 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 15
+[PHY  ][0.410500] SLOT DATA     | Frame 41 Sub 0 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.410536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.410536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.410964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.410964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+0.411s [MAC] NR HARQ NACK #17 for RNTI=1 ProcessID=14 *** HARQ EXHAUSTED → scheduling stall
+[MAC  ][0.411000] DL HARQ       | RNTI 1 | PID 14 | NACK | Retx 3
+0.411s [APP] DL packet SENT size=1012
+[MAC  ][0.411000] DL SCHED      | Frame 41 Slot 0 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 14
+[PHY  ][0.411000] SLOT DATA     | Frame 41 Sub 1 Slot 0 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.411036] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.411036] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.411464] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.411464] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+[MAC  ][0.411500] DL HARQ       | RNTI 1 | PID 13 | ACK | Retx 3
+[MAC  ][0.411500] DL SCHED      | Frame 41 Slot 1 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 13
+[PHY  ][0.411500] SLOT DATA     | Frame 41 Sub 1 Slot 1 | Cell 1 BWP 0 | ActiveUE 1 | UsedRE 636 UsedSym 12 | AvailRB 53 AvailSym 12
+[PHY  ][0.411536] DL CTRL SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.411536] DL TB SIZE    | RNTI 1 | TBS 136 B
+[PHY  ][0.411964] DL DATA SINR  | RNTI 1 | SINR -17.18 dB
+[PHY  ][0.411964] CQI FEEDBACK  | RNTI 1 | WB-CQI 0 | MCS 0 | RI 1
+[MAC  ][0.412000] DL HARQ       | RNTI 1 | PID 12 | ACK | Retx 3
+0.412s [APP] DL packet SENT size=1012
+[MAC  ][0.412000] DL SCHED      | Frame 41 Slot 0 | RNTI 1 | MCS 0 | TBS 136 B | HARQ 12
