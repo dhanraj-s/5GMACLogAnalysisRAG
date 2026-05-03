@@ -1,0 +1,13 @@
+{
+    "OLLAMA_ADDR": "http://localhost:11434",
+    "DEFAULT_LLM_MODEL": "gemma4:latest",
+    "EMBEDDING_MODEL": "qwen3-embedding:4b",
+    "GROQ_MODEL": "llama-3.3-70b-versatile",
+    "DEFAULT_LOG_FILE": "../log_files/du_mac_logs_3.txt",
+    "DEFAULT_GROQ_LOG_FILE": "../log_files/du_mac_logs_3_trimmed.txt",
+    "RESULTS_DIR": "../results",
+    "NUM_CLUSTERS": 15,
+    "DB_DIR": "../db",
+    "DOCS_INPUT_DIR": "../rag_docs",
+    "DOCS_OUTPUT_DIR": "../rag_docs_md"
+}
