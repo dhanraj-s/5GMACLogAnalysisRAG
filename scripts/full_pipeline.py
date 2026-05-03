@@ -21,7 +21,7 @@ if ROOT_DIR not in sys.path:
 from src.retrieval_pipeline import load_retriever
 from src.mine_logs import get_scored_events as get_scored_events_static
 from src.mine_logs import clean_log_line
-from src.mine_logs_dynamic_2 import get_scored_events as get_scored_events_dynamic
+from src.mine_logs_dynamic import get_scored_events as get_scored_events_dynamic
 
 # --- Load Configuration ---
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../configs/config.json')
