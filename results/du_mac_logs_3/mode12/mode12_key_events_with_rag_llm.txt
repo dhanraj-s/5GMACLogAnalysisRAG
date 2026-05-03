@@ -1,0 +1,5 @@
+1. UE ffd4: reported RSRP index 2 invalid
+2. NR band duplex spacing is 0 KHz (nr_bandtable[40].band = 78)
+3. Frame.Slot 0.0
+4. Invalid timing advance offset for RNTI ffd4
+5. DL_Bandwidth:40

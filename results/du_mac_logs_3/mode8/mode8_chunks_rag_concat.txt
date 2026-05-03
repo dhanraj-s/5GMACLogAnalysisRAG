@@ -1,0 +1,308 @@
+--- Chunk 1 ---
+Source: docs_md/mac-usage_example_removed.md | Section: Periodic output and interpretation / 
+## Periodic output and interpretation  
+The scheduler periodically outputs statistics that can help you judge the radio
+channel quality, i.e., why a UE does not perform as you would expect. The
+scheduler outputs this info in log level "INFO". The same information is also
+available in the the file `nrMAC-stats.log` in the same directory in which
+`nr-softmodem` is run.  
+In the first line,  
+* `UE RNTI` (here `2460`): this is also used as the DU UE ID over F1; each line
+is prepended with the RNTI
+* `CU UE ID` (`2`): separate identifier from the RNTI to handle multiple
+UEs across DUs (in which case RNTI conflicts are possible)
+* whether a UE is `in-sync` (actively being scheduled) or `out-of-sync` (the UE
+is not being scheduled, because it did not respond when being scheduled in UL
+or since it has radio-link failure
+* `PH` (`28`): Power Headroom, the amount of power the UE has left. If it is > 40 you
+can achieve full UL throughput. `PCMAX` (`24 dBm`) is what the UE reported as
+maximum UL transmit power it can output in the channel.
+* `RSRP` (`-74`): measured power of the DL reference signals at the UE. >-80dBm
+you should have full DL throughput. <-95 dBm, you are very limited in terms
+of connectivity.
+* `SINR` (`40.0`): measured signal to interference and noise ratio of the SSB
+received at the UE. Maximum value that can be reported by the UE is 40.0 dB.  
+The second and third line reflect channel state information (CSI) as
+reported by the UE, and only appear if CSI-RS/SRS are enabled and _received_
+(for some bands, they cannot be enabled):  
+* `CQI` (`15`): the channel quality indicator is a number between 0 and 15. It
+indicates the achievable spectral efficiency of the UE. 15 means highest, 0
+is lowest. This corresponds to a 4-bit table in 38.214 with actual spectral
+efficiencies in bits/s/Hz
+* `RI`: Rank indicator 1-4. If 1 it means limited to 1 layer transmission on DL. 2 two layers, etc.
+* `PMI`: precoding matrix indicator. It's a measure of the spatial-direction of
+the gNBs transmit array as seen by the UE. It indicates the precoding that
+the gNB applies. It should be more or less stationary unless the UE is moving
+around quickly. It can jump when objects move around the UE
+* `UL-RI`, `TPMI`: same as DL.  
+The fourth and fifth line show HARQ-related information:  
+* `dlsch_rounds A/B/C/D` (`32917/5113/1504/560`). This is the number of
+transmissions by the gNB for each round of the HARQ protocol. `A` is the first
+round, B is the second, etc. If `A` is high and `B` is low, `C` is lower and `D` is
+around 0, then things work well. If `B` is around the same as `A`, then the first
+round is almost always in error. This is not usually good unless the UE is
+far from the gNB.
+* `dlsch_errors` (`211`) is the number of errors, meaning that after 4
+transmissions the MAC transport block was not received by the UE. A high
+number is not good/it should be a very low number, again unless there are
+severe radio conditions.
+* `pucch0_DTX`: this is the number of PUCCH format 0 (or 1 later) missed
+detections (unreceived ack/nak). This means that either the UL is very bad
+and ACK/NAK cannot be conveyed properly or DL DCIs are missed by the UE. This
+is also something that should be very small compared to `A` in
+`dlsch_rounds`.
+* `(SNR x+y dB)`: PUCCH SNR where `x` is the average PUCCH SNR and `y` the
+difference to the target (positive: above SNR, negative: below)
+* `DLSCH BLER` is the current measured block-error rate of the DLSCH. Basically
+a moving average of `B`/`A` in `dlsch_rounds`. This is something that should always
+be close to the target bler that the MAC scheduler uses. typically 10-30% if
+we want a high throughput scheduling policy.
+* `MCS (Q) M`: M (0-28) is the current MCS used by the MAC scheduler and Q is
+the mcs table: 0=64QAM, 1=256QAM, 2=low SE table for URLLC
+* `ulsch_rounds`/`ulsch_errors`: same as DLSCH but for UL.
+* `ulsch_DTX` (`285`): number of PUSCH missed detection (i.e. signal energy below
+threshold in configuration file, `L1s.pusch_dtx_threshold`, which is 10 times the
+actual unnormalized digital signal level). This is an indication of either
+very poor radio conditions (UE cannot reach the gNB), power control problems,
+or missed DCI 0\_x DCIs. It should be low compared to `A` in `ulsch_rounds`
+when things are working properly.
+* ULSCH `BLER/MCS`: same as DLSCH but for UL.
+* ULSCH `Qm X deltaMCS Y dB`: modulation order: 2=QPSK, 4=16QAM, 6=64QAM,
+8=256QAM and the dB offset for deltaMCS component in PUSCH power control law.
+If deltaMCS is disabled (this is the default) then it indicates 0. When
+deltaMCS is enabled it indicates the current power offset applied by the UE
+on the UL corresponding to the scheduled MCS
+* ULSCH `NPRB`: current number of PRBs scheduled by the gNB. This will
+fluctuate a lot but when doing high throughput with iperf, it indicates the
+number of PRBs that the UE is actually able to use with its power budget and
+should be high.
+
+--- Chunk 2 ---
+Source: docs_md/mac-usage_example_removed.md | Section: Periodic output and interpretation / 
+If deltaMCS is disabled (this is the default) then it indicates 0. When
+deltaMCS is enabled it indicates the current power offset applied by the UE
+on the UL corresponding to the scheduled MCS
+* ULSCH `NPRB`: current number of PRBs scheduled by the gNB. This will
+fluctuate a lot but when doing high throughput with iperf, it indicates the
+number of PRBs that the UE is actually able to use with its power budget and
+should be high.
+* ULSCH `SNR`: the current SNR that the gNB receives the UE PUSCH signal with.
+This value should be close to the target SNR; in paranthesis, the difference
+to the target SNR.
+* Both ULSCH/DLSCH `CCE fail`: lists the number of failed CCE attempts. If this
+number gets high, it signifies that the scheduler tried to scheduled this UE,
+but could not allocate the DCI.  
+In the last lines:  
+* `MAC` shows the amount of MAC PDU bytes scheduled in transmit (`TX`,
+`1530943191`) and receive (`RX`, `194148`) directions
+* `LCID X` shows the amount of MAC SDU/RLC PDU data for Logical Channel ID with
+ID `X` in transmit and receive directions. LCIDs 1 and 2 are mapped to SRBs 1
+and 2. LCIDs 4 and onward are mapped to DRBs 1 onward. If you have an LCID 4,
+it means you have a PDU session.
+
+--- Chunk 3 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.2 Formats and parameters / 6.2.3a MAC payload for MSGB
+| Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Oct 9   |
+| C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | Oct 10  |
+| C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | Oct 11  |
+
+--- Chunk 4 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.2 Formats and parameters / 6.2.1 MAC subheader for DL-SCH and UL-SCH
+|-------------|-----------|-------------------------------------------------------------------|
+| 0 to 244    | 64 to 308 | Reserved                                                          |
+| 245         | 309       | Serving Cell Set based SRS Spatial Relation Indication            |
+| 246         | 310       | PUSCH Pathloss Reference RS Update                                |
+| 247         | 311       | SRS Pathloss Reference RS Update                                  |
+| 248         | 312       | Enhanced SP/AP SRS Spatial Relation Indication                    |
+| 249         | 313       | Enhanced PUCCH Spatial Relation Activation/Deactivation           |
+| 250         | 314       | Enhanced TCI States Activation/Deactivation for UE-specific PDSCH |
+| 251         | 315       | Duplication RLC Activation/Deactivation                           |
+| 252         | 316       | Absolute Timing Advance Command                                   |
+| 253         | 317       | SP Positioning SRS Activation/Deactivation                        |
+| 254         | 318       | Provided Guard Symbols                                            |
+| 255         | 319       | Timing Delta                                                      |  
+Table 6.2.1-2 Values of LCID for UL-SCH  
+| Codepoint/Index   | LCID values                                                    |
+|-------------------|----------------------------------------------------------------|
+| 0                 | CCCH of size 64 bits (referred to as "CCCH1" in TS 38.331 [5]) |
+| 1-32              | Identity of the logical channel                                |
+| 33                | Extended logical channel ID field (two-octet eLCID field)      |
+| 34                | Extended logical channel ID field (one-octet eLCID field)      |
+| 35-44             | Reserved                                                       |
+| 45                | Truncated Sidelink BSR                                         |
+| 46                | Sidelink BSR                                                   |
+| 47                | Reserved                                                       |
+| 48                | LBT failure (four octets)                                      |
+| 49                | LBT failure (one octet)                                        |
+| 50                | BFR (one octet C i )                                           |
+| 51                | Truncated BFR (one octet C i )                                 |
+| 52                | CCCH of size 48 bits (referred to as "CCCH" in TS 38.331 [5])  |
+| 53                | Recommended bit rate query                                     |
+| 54                | Multiple Entry PHR (four octets C i )                          |
+| 55                | Configured Grant Confirmation                                  |
+| 56                | Multiple Entry PHR (one octet C i )                            |
+| 57                | Single Entry PHR                                               |
+| 58                | C-RNTI                                                         |
+| 59                | Short Truncated BSR                                            |
+| 60                | Long Truncated BSR                                             |
+| 61                | Short BSR                                                      |
+| 62                | Long BSR                                                       |
+| 63                | Padding                                                        |  
+Table 6.2.1-2a Values of two-octet eLCID for UL-SCH  
+| Codepoint       | Index               | LCID values                     |
+|-----------------|---------------------|---------------------------------|
+| 0 to (2 16 - 1) | 320 to (2 16 + 319) | Identity of the logical channel |  
+Table 6.2.1-2b Values of one-octet eLCID for UL-SCH  
+| Codepoint   | Index     | LCID values                                  |
+|-------------|-----------|----------------------------------------------|
+| 0 to 249    | 64 to 313 | Reserved                                     |
+| 250         | 314       | BFR (four octets C i )                       |
+| 251         | 315       | Truncated BFR (four octets C i )             |
+| 252         | 316       | Multiple Entry Configured Grant Confirmation |
+| 253         | 317       | Sidelink Configured Grant Confirmation       |
+| 254         | 318       | Desired Guard Symbols                        |
+| 255         | 319       | Pre-emptive BSR                              |
+
+--- Chunk 5 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.13 Handling of unknown, unforeseen and erroneous protocol data / 
+## 5.13 Handling of unknown, unforeseen and erroneous protocol data  
+When a MAC entity receives a MAC PDU for the MAC entity's C-RNTI or CS-RNTI, or by the configured downlink assignment, containing a Reserved LCID or eLCID value, or an LCID or eLCID value the MAC Entity does not support, the MAC entity shall at least:  
+1> discard the received subPDU and any remaining subPDUs in the MAC PDU.  
+When a MAC entity receives a MAC PDU for the MAC entity's C-RNTI or CS-RNTI, or by the configured downlink assignment, containing an LCID or eLCID value which is not configured, the MAC entity shall at least:  
+1> discard the received subPDU.  
+When a MAC entity receives a MAC PDU on SL-SCH containing a Reserved LCID value for broadcast or groupcast, or an LCID value which is not configured, the MAC entity shall:  
+1> discard the received subPDU.  
+When a MAC entity receives a MAC PDU on SL-SCH containing a Reserved LCID value for unicast, the MAC entity shall:  
+1> discard the received subPDU and any remaining subPDUs in the MAC PDU.
+
+--- Chunk 6 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.7 Discontinuous Reception (DRX) / 
+- 1> if a MAC PDU is transmitted in a configured uplink grant and LBT failure indication is not received from lower layers:
+- 2> start the drx-HARQ-RTT-TimerUL for the corresponding HARQ process in the first symbol after the end of the first repetition of the corresponding PUSCH transmission;
+- 2> stop the drx-RetransmissionTimerUL for the corresponding HARQ process.
+- 1> if a drx-HARQ-RTT-TimerDL expires:
+- 2> if the data of the corresponding HARQ process was not successfully decoded:
+- 3> start the drx-RetransmissionTimerDL for the corresponding HARQ process in the first symbol after the expiry of drx-HARQ-RTT-TimerDL .
+- 1> if a drx-HARQ-RTT-TimerUL expires:
+- 2> start the drx-RetransmissionTimerUL for the corresponding HARQ process in the first symbol after the expiry of drx-HARQ-RTT-TimerUL .  
+For each DRX group, the MAC entity shall:  
+1> if a DRX Command MAC CE or a Long DRX Command MAC CE is received:  
+- 2> stop drx-onDurationTimer ;
+- 2> stop drx-InactivityTimer .  
+1> if drx-InactivityTimer for this DRX Group expires:  
+- 2> if the Short DRX cycle is configured:
+- 3> start or restart drx-ShortCycleTimer for this DRX Group in the first symbol after the expiry of drxInactivityTimer ;  
+3> use the Short DRX Cycle for this DRX group.  
+- 2> else:  
+3> use the Long DRX cycle for this DRX group.  
+1> if a DRX Command MAC CE is received:  
+- 2> if the Short DRX cycle is configured:
+- 3> start or restart drx-ShortCycleTimer for this DRX Group in the first symbol after the end of DRX Command MAC CE reception;  
+3> use the Short DRX Cycle for both DRX groups.  
+- 2> else:  
+3> use the Long DRX cycle for both DRX groups.  
+- 1> if drx-ShortCycleTimer for this DRX Group expires:  
+2> use the Long DRX for this DRX Group cycle.  
+- 1> if a Long DRX Command MAC CE is received:  
+2> stop drx-ShortCycleTimer for both DRX groups;  
+2> use the Long DRX cycle for both DRX groups.  
+- 1> if the Short DRX Cycle is used, and [(SFN × 10) + subframe number] modulo ( drx-ShortCycle ) = ( drxStartOffset ) modulo ( drx-ShortCycle ):  
+2> start drx-onDurationTimer after drx-SlotOffset from the beginning of the subframe.  
+- 1> if the Long DRX Cycle is used, and [(SFN × 10) + subframe number] modulo ( drx-LongCycle ) = drxStartOffset :
+- 2> if DCP monitoring is configured for the active DL BWP as specified in TS 38.213 [6], clause 10.3:
+- 3> if DCP indication associated with the current DRX Cycle received from lower layer indicated to start drxonDurationTimer , as specified in TS 38.213 [6]; or
+- 3> if all DCP occasion(s) in time domain, as specified in TS 38.213 [6], associated with the current DRX Cycle occurred in Active Time considering grants/assignments/DRX Command MAC CE/Long DRX Command MAC CE received and Scheduling Request sent until 4 ms prior to start of the last DCP occasion, or within BWP switching interruption length, or during a measurement gap; or
+- 3> if ps-Wakeup is configured with value true and DCP indication associated with the current DRX Cycle has not been received from lower layers:
+- 4> start drx-onDurationTimer after drx-SlotOffset from the beginning of the subframe.
+- 2> else:
+- 3> start drx-onDurationTimer after drx-SlotOffset from the beginning of the subframe.
+- NOTE 2:  In case of unaligned SFN across carriers in a cell group, the SFN of the SpCell is used to calculate the DRX duration.
+- 1> if the DRX group is in Active Time:
+- 2> monitor the PDCCH on the Serving Cells in this DRX group as specified in TS 38.213 [6];
+- 2> if the PDCCH indicates a DL transmission:
+- 3> start the drx-HARQ-RTT-TimerDL for the corresponding HARQ process in the first symbol after the end of the corresponding transmission carrying the DL HARQ feedback;
+- NOTE 3:  When HARQ feedback is postponed by PDSCH-to-HARQ\_feedback timing indicating a non-numerical k1 value, as specified in TS 38.213 [6], the corresponding transmission opportunity to send the DL HARQ feedback is indicated in a later PDCCH requesting the HARQ-ACK feedback.
+- 3> stop the drx-RetransmissionTimerDL for the corresponding HARQ process.
+- 3> if the PDSCH-to-HARQ\_feedback timing indicate a non-numerical k1 value as specified in TS 38.213 [6]:
+- 4> start the drx-RetransmissionTimerDL in the first symbol after the PDSCH transmission for the corresponding HARQ process.
+- 2> if the PDCCH indicates a UL transmission:  
+- 3> start the drx-HARQ-RTT-TimerUL for the corresponding HARQ process in the first symbol after the end of the first repetition of the corresponding PUSCH transmission;
+- 3> stop the drx-RetransmissionTimerUL for the corresponding HARQ process.
+- 2> if the PDCCH indicates a new transmission (DL or UL) on a Serving Cell in this DRX group:
+- 3> start or restart drx-InactivityTimer for this DRX group in the first symbol after the end of the PDCCH reception.
+- 1> if DCP monitoring is configured for the active DL BWP as specified in TS 38.213 [6], clause 10.3; and
+- 1> if the current symbol n occurs within drx-onDurationTimer duration; and
+
+--- Chunk 7 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.8 Transmission and reception without dynamic scheduling / 5.8.2 Uplink
+### 5.8.2 Uplink  
+There are two types of transmission without dynamic grant:  
+- -configured grant Type 1 where an uplink grant is provided by RRC, and stored as configured uplink grant;
+- -configured grant Type 2 where an uplink grant is provided by PDCCH, and stored or cleared as configured uplink grant based on L1 signalling indicating configured uplink grant activation or deactivation.  
+Type 1 and Type 2 are configured by RRC per Serving Cell and per BWP. Multiple configurations can be active simultaneously in the same BWP. For Type 2, activation and deactivation are independent among the Serving Cells. For the same BWP, the MAC entity can be configured with both Type 1 and Type 2.  
+RRC configures the following parameters when the configured grant Type 1 is configured:  
+- -cs-RNTI : CS-RNTI for retransmission;
+- -periodicity : periodicity of the configured grant Type 1;
+- -timeDomainOffset : Offset of a resource with respect to SFN = timeReferenceSFN in time domain;
+- -timeDomainAllocation : Allocation of configured uplink grant in time domain which contains startSymbolAndLength (i.e. SLIV in TS 38.214 [7]) or startSymbol (i.e. S in TS 38.214 [7]);
+- -nrofHARQ-Processes : the number of HARQ processes for configured grant;
+- -harq-ProcID-Offset : offset of HARQ process for configured grant for operation with shared spectrum channel access;  
+- -harq-ProcID-Offset2 : offset of HARQ process for configured grant;
+- -timeReferenceSFN : SFN used for determination of the offset of a resource in time domain. The UE uses the closest SFN with the indicated number preceding the reception of the configured grant configuration.  
+RRC configures the following parameters when the configured grant Type 2 is configured:  
+- -cs-RNTI : CS-RNTI for activation, deactivation, and retransmission;
+- -periodicity : periodicity of the configured grant Type 2;
+- -nrofHARQ-Processes : the number of HARQ processes for configured grant;
+- -harq-ProcID-Offset : offset of HARQ process for configured grant for operation with shared spectrum channel access;
+- -harq-ProcID-Offset2 : offset of HARQ process for configured grant.  
+RRC configures the following parameters when retransmissions on configured uplink grant is configured:  
+- -cg-RetransmissionTimer : the duration after a configured grant (re)transmission of a HARQ process when the UE shall not autonomously retransmit that HARQ process.  
+Upon configuration of a configured grant Type 1 for a Serving Cell by upper layers, the MAC entity shall:  
+- 1> store the uplink grant provided by upper layers as a configured uplink grant for the indicated Serving Cell;
+- 1> initialise or re-initialise the configured uplink grant to start in the symbol according to timeDomainOffset , timeReferenceSFN , and S (derived from SLIV or provided by startSymbol as specified in TS 38.214 [7]), and to reoccur with periodicity .  
+After an uplink grant is configured for a configured grant Type 1, the MAC entity shall consider sequentially that the N th (N >= 0) uplink grant occurs in the symbol for which:  
+```
+[(SFN × numberOfSlotsPerFrame × numberOfSymbolsPerSlot ) + (slot number in the frame × numberOfSymbolsPerSlot ) + symbol number in the slot] = ( timeReferenceSFN × numberOfSlotsPerFrame × numberOfSymbolsPerSlot + timeDomainOffset × numberOfSymbolsPerSlot + S + N × periodicity ) modulo (1024 × numberOfSlotsPerFrame × numberOfSymbolsPerSlot ).
+```  
+After an uplink grant is configured for a configured grant Type 2, the MAC entity shall consider sequentially that the N th (N >= 0) uplink grant occurs in the symbol for which:  
+[(SFN × numberOfSlotsPerFrame × numberOfSymbolsPerSlot  
+numberOfSymbolsPerSlot  
+```
+) + (slot number in the frame × ) + symbol number in the slot] =
+```  
+[(SFNstart time × numberOfSlotsPerFrame × numberOfSymbolsPerSlot + slotstart time × numberOfSymbolsPerSlot + symbolstart time) + N × periodicity ] modulo (1024 × numberOfSlotsPerFrame × numberOfSymbolsPerSlot ).  
+where SFNstart time, slotstart time, and symbolstart time are the SFN, slot, and symbol, respectively, of the first transmission opportunity of PUSCH where the configured uplink grant was (re-)initialised.  
+NOTE: In case of unaligned SFN across carriers in a cell group, the SFN of the concerned Serving Cell is used to calculate the occurrences of configured uplink grants.  
+When the configured uplink grant is released by upper layers, all the corresponding configurations shall be released and all corresponding uplink grants shall be cleared.  
+The MAC entity shall:  
+1> if at least one configured uplink grant confirmation has been triggered and not cancelled; and  
+1> if the MAC entity has UL resources allocated for new transmission:  
+2> if the MAC entity is configured with configuredGrantConfigList :  
+- 3> instruct the Multiplexing and Assembly procedure to generate a Multiple Entry Configured Grant Confirmation MAC CE as defined in clause 6.1.3.31.  
+2> else:
+
+--- Chunk 8 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.4 UL-SCH data transfer / 5.4.1 UL Grant reception
+- 4> consider the NDI bit to have been toggled;
+- 4> deliver the configured uplink grant and the associated HARQ information to the HARQ entity.
+- 3> else if the previous uplink grant delivered to the HARQ entity for the same HARQ process was a configured uplink grant (i.e. retransmission on configured grant):
+- 4> deliver the configured uplink grant and the associated HARQ information to the HARQ entity.  
+For configured uplink grants neither configured with harq-ProcID-Offset2 nor with cg-RetransmissionTimer , the HARQ Process ID associated with the first symbol of a UL transmission is derived from the following equation:  
+HARQ Process ID = [floor(CURRENT\_symbol/ periodicity )] modulo nrofHARQ-Processes  
+For configured uplink grants with harq-ProcID-Offset2 , the HARQ Process ID associated with the first symbol of a UL transmission is derived from the following equation:  
+HARQ Process ID = [floor(CURRENT\_symbol / periodicity )] modulo nrofHARQ-Processes + harq-ProcID-Offset2  
+where CURRENT\_symbol = (SFN × numberOfSlotsPerFrame × numberOfSymbolsPerSlot + slot number in the frame × numberOfSymbolsPerSlot + symbol number in the slot), and numberOfSlotsPerFrame and numberOfSymbolsPerSlot refer to the number of consecutive slots per frame and the number of consecutive symbols per slot, respectively as specified in TS 38.211 [8].  
+For configured uplink grants configured with cg-RetransmissionTimer , the UE implementation select an HARQ Process ID among the HARQ process IDs available for the configured grant configuration. The UE shall prioritize retransmissions before initial transmissions. The UE shall toggle the NDI in the CG-UCI for new transmissions and not toggle the NDI in the CG-UCI in retransmissions.  
+- NOTE 1:  CURRENT\_symbol refers to the symbol index of the first transmission occasion of a repetition bundle that takes place.
+- NOTE 2:  A HARQ process is configured for a configured uplink grant where neither harq-ProcID-Offset nor harqProcID-Offset2 is configured, if the configured uplink grant is activated and the associated HARQ process ID is less than nrofHARQ-Processes . A HARQ process is configured for a configured uplink grant where harq-ProcID-Offset2 is configured, if the configured uplink grant is activated and the associated HARQ process ID is greater than or equal to harq-ProcID-Offset2 and less than sum of harqProcID-Offset2 and nrofHARQ-Processes for the configured grant configuration.
+- NOTE 3:  If the MAC entity receives a grant in a Random Access Response (i.e. MAC RAR or fallbackRAR) or determines a grant as specified in clause 5.1.2a for MSGA payload and if the MAC entity also receives an overlapping grant for its C-RNTI or CS-RNTI, requiring concurrent transmissions on the SpCell, the MAC entity may choose to continue with either the grant for its RA-RNTI/MSGB-RNTI/the MSGA payload transmission or the grant for its C-RNTI or CS-RNTI.
+- NOTE 4:  In case of unaligned SFN across carriers in a cell group, the SFN of the concerned Serving Cell is used to calculate the HARQ Process ID used for configured uplink grants.  
+NOTE 5:  If cg-RetransmissionTimer is not configured, a HARQ process is not shared between different configured grant configurations in the same BWP.  
+For the MAC entity configured with lch-basedPrioritization , priority of an uplink grant is determined by the highest priority among priorities of the logical channels with data available that are multiplexed or can be multiplexed in the MAC PDU, according to the mapping restrictions as described in clause 5.4.3.1.2. The priority of an uplink grant for which no data for logical channels is multiplexed or can be multiplexed in the MAC PDU is lower than either the priority of an uplink grant for which data for any logical channels is multiplexed or can be multiplexed in the MAC PDU or the priority of the logical channel triggering an SR.  
+If the corresponding PUSCH transmission of a configured uplink grant is cancelled by CI-RNTI, as specified in clause 11.2A of TS 38.213 [6], this uplink grant is a de-prioritized uplink grant.  
+When the MAC entity is configured with lch-basedPrioritization , for each uplink grant whose associated PUSCH can be transmitted by lower layers, the MAC entity shall:  
+1> if this uplink grant is addressed to CS-RNTI with NDI = 1 or C-RNTI:  
+- 2> if there is no overlapping PUSCH duration of a configured uplink grant which was not already de-prioritized, in the same BWP whose priority is higher than the priority of the uplink grant; and
+- 2> if there is no overlapping PUCCH resource with an SR transmission which was not already de-prioritized and the priority of the logical channel that triggered the SR is higher than the priority of the uplink grant:
+- 3> consider this uplink grant as a prioritized uplink grant;
+- 3> consider the other overlapping uplink grant(s), if any, as a de-prioritized uplink grant(s);

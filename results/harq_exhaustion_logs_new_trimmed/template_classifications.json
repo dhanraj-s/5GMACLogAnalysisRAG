@@ -1,0 +1,12 @@
+{
+    "[PHY <*> SLOT DATA | Frame <*> Sub <*> Slot <*> | Cell 1 BWP 0 | ActiveUE <*> | UsedRE <*> UsedSym <*> | AvailRB 53 AvailSym <*>": "NORMAL",
+    "[PHY <*> DL <*> <*> | RNTI 1 | <*> <*> <*>": "NORMAL",
+    "[RRC <*> <*> RX | IMSI 1 | Cell 1 | RNTI 1": "NORMAL",
+    "[PHY ][0.400000] UE MEAS | RNTI 1 | RSRP -137.41 dBm | RSRQ 0.00 dB | Serv Y CC 0": "NORMAL",
+    "<*> [APP] DL packet SENT size=1012": "NORMAL",
+    "[MAC <*> DL SCHED | Frame <*> Slot <*> | RNTI 1 | MCS <MCS_INVALID> | TBS 136 B | HARQ <*>": "ANOMALOUS",
+    "[PHY <*> CQI FEEDBACK | RNTI 1 | WB-CQI <CQI_INVALID> | MCS <MCS_INVALID> | RI 1": "ANOMALOUS",
+    "<*> NR HARQ NACK <*> for RNTI=1 <*>": "ANOMALOUS",
+    "[MAC <*> DL HARQ | RNTI 1 | PID <*> | <*> | Retx <*>": "NORMAL",
+    "<*> NR HARQ NACK <*> for RNTI=1 <*> *** HARQ EXHAUSTED \u2192 scheduling stall": "ANOMALOUS"
+}

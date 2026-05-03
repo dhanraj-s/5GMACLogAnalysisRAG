@@ -1,0 +1,273 @@
+--- Chunk 1 ---
+Source: docs_md/mac-usage_example_removed.md | Section: Periodic output and interpretation / 
+## Periodic output and interpretation  
+The scheduler periodically outputs statistics that can help you judge the radio
+channel quality, i.e., why a UE does not perform as you would expect. The
+scheduler outputs this info in log level "INFO". The same information is also
+available in the the file `nrMAC-stats.log` in the same directory in which
+`nr-softmodem` is run.  
+In the first line,  
+* `UE RNTI` (here `2460`): this is also used as the DU UE ID over F1; each line
+is prepended with the RNTI
+* `CU UE ID` (`2`): separate identifier from the RNTI to handle multiple
+UEs across DUs (in which case RNTI conflicts are possible)
+* whether a UE is `in-sync` (actively being scheduled) or `out-of-sync` (the UE
+is not being scheduled, because it did not respond when being scheduled in UL
+or since it has radio-link failure
+* `PH` (`28`): Power Headroom, the amount of power the UE has left. If it is > 40 you
+can achieve full UL throughput. `PCMAX` (`24 dBm`) is what the UE reported as
+maximum UL transmit power it can output in the channel.
+* `RSRP` (`-74`): measured power of the DL reference signals at the UE. >-80dBm
+you should have full DL throughput. <-95 dBm, you are very limited in terms
+of connectivity.
+* `SINR` (`40.0`): measured signal to interference and noise ratio of the SSB
+received at the UE. Maximum value that can be reported by the UE is 40.0 dB.  
+The second and third line reflect channel state information (CSI) as
+reported by the UE, and only appear if CSI-RS/SRS are enabled and _received_
+(for some bands, they cannot be enabled):  
+* `CQI` (`15`): the channel quality indicator is a number between 0 and 15. It
+indicates the achievable spectral efficiency of the UE. 15 means highest, 0
+is lowest. This corresponds to a 4-bit table in 38.214 with actual spectral
+efficiencies in bits/s/Hz
+* `RI`: Rank indicator 1-4. If 1 it means limited to 1 layer transmission on DL. 2 two layers, etc.
+* `PMI`: precoding matrix indicator. It's a measure of the spatial-direction of
+the gNBs transmit array as seen by the UE. It indicates the precoding that
+the gNB applies. It should be more or less stationary unless the UE is moving
+around quickly. It can jump when objects move around the UE
+* `UL-RI`, `TPMI`: same as DL.  
+The fourth and fifth line show HARQ-related information:  
+* `dlsch_rounds A/B/C/D` (`32917/5113/1504/560`). This is the number of
+transmissions by the gNB for each round of the HARQ protocol. `A` is the first
+round, B is the second, etc. If `A` is high and `B` is low, `C` is lower and `D` is
+around 0, then things work well. If `B` is around the same as `A`, then the first
+round is almost always in error. This is not usually good unless the UE is
+far from the gNB.
+* `dlsch_errors` (`211`) is the number of errors, meaning that after 4
+transmissions the MAC transport block was not received by the UE. A high
+number is not good/it should be a very low number, again unless there are
+severe radio conditions.
+* `pucch0_DTX`: this is the number of PUCCH format 0 (or 1 later) missed
+detections (unreceived ack/nak). This means that either the UL is very bad
+and ACK/NAK cannot be conveyed properly or DL DCIs are missed by the UE. This
+is also something that should be very small compared to `A` in
+`dlsch_rounds`.
+* `(SNR x+y dB)`: PUCCH SNR where `x` is the average PUCCH SNR and `y` the
+difference to the target (positive: above SNR, negative: below)
+* `DLSCH BLER` is the current measured block-error rate of the DLSCH. Basically
+a moving average of `B`/`A` in `dlsch_rounds`. This is something that should always
+be close to the target bler that the MAC scheduler uses. typically 10-30% if
+we want a high throughput scheduling policy.
+* `MCS (Q) M`: M (0-28) is the current MCS used by the MAC scheduler and Q is
+the mcs table: 0=64QAM, 1=256QAM, 2=low SE table for URLLC
+* `ulsch_rounds`/`ulsch_errors`: same as DLSCH but for UL.
+* `ulsch_DTX` (`285`): number of PUSCH missed detection (i.e. signal energy below
+threshold in configuration file, `L1s.pusch_dtx_threshold`, which is 10 times the
+actual unnormalized digital signal level). This is an indication of either
+very poor radio conditions (UE cannot reach the gNB), power control problems,
+or missed DCI 0\_x DCIs. It should be low compared to `A` in `ulsch_rounds`
+when things are working properly.
+* ULSCH `BLER/MCS`: same as DLSCH but for UL.
+* ULSCH `Qm X deltaMCS Y dB`: modulation order: 2=QPSK, 4=16QAM, 6=64QAM,
+8=256QAM and the dB offset for deltaMCS component in PUSCH power control law.
+If deltaMCS is disabled (this is the default) then it indicates 0. When
+deltaMCS is enabled it indicates the current power offset applied by the UE
+on the UL corresponding to the scheduled MCS
+* ULSCH `NPRB`: current number of PRBs scheduled by the gNB. This will
+fluctuate a lot but when doing high throughput with iperf, it indicates the
+number of PRBs that the UE is actually able to use with its power budget and
+should be high.
+
+--- Chunk 2 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.2 Formats and parameters / 6.2.3a MAC payload for MSGB
+| Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Oct 9   |
+| C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | Oct 10  |
+| C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | Oct 11  |
+
+--- Chunk 3 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.2 Formats and parameters / 6.2.1 MAC subheader for DL-SCH and UL-SCH
+|-------------|-----------|-------------------------------------------------------------------|
+| 0 to 244    | 64 to 308 | Reserved                                                          |
+| 245         | 309       | Serving Cell Set based SRS Spatial Relation Indication            |
+| 246         | 310       | PUSCH Pathloss Reference RS Update                                |
+| 247         | 311       | SRS Pathloss Reference RS Update                                  |
+| 248         | 312       | Enhanced SP/AP SRS Spatial Relation Indication                    |
+| 249         | 313       | Enhanced PUCCH Spatial Relation Activation/Deactivation           |
+| 250         | 314       | Enhanced TCI States Activation/Deactivation for UE-specific PDSCH |
+| 251         | 315       | Duplication RLC Activation/Deactivation                           |
+| 252         | 316       | Absolute Timing Advance Command                                   |
+| 253         | 317       | SP Positioning SRS Activation/Deactivation                        |
+| 254         | 318       | Provided Guard Symbols                                            |
+| 255         | 319       | Timing Delta                                                      |  
+Table 6.2.1-2 Values of LCID for UL-SCH  
+| Codepoint/Index   | LCID values                                                    |
+|-------------------|----------------------------------------------------------------|
+| 0                 | CCCH of size 64 bits (referred to as "CCCH1" in TS 38.331 [5]) |
+| 1-32              | Identity of the logical channel                                |
+| 33                | Extended logical channel ID field (two-octet eLCID field)      |
+| 34                | Extended logical channel ID field (one-octet eLCID field)      |
+| 35-44             | Reserved                                                       |
+| 45                | Truncated Sidelink BSR                                         |
+| 46                | Sidelink BSR                                                   |
+| 47                | Reserved                                                       |
+| 48                | LBT failure (four octets)                                      |
+| 49                | LBT failure (one octet)                                        |
+| 50                | BFR (one octet C i )                                           |
+| 51                | Truncated BFR (one octet C i )                                 |
+| 52                | CCCH of size 48 bits (referred to as "CCCH" in TS 38.331 [5])  |
+| 53                | Recommended bit rate query                                     |
+| 54                | Multiple Entry PHR (four octets C i )                          |
+| 55                | Configured Grant Confirmation                                  |
+| 56                | Multiple Entry PHR (one octet C i )                            |
+| 57                | Single Entry PHR                                               |
+| 58                | C-RNTI                                                         |
+| 59                | Short Truncated BSR                                            |
+| 60                | Long Truncated BSR                                             |
+| 61                | Short BSR                                                      |
+| 62                | Long BSR                                                       |
+| 63                | Padding                                                        |  
+Table 6.2.1-2a Values of two-octet eLCID for UL-SCH  
+| Codepoint       | Index               | LCID values                     |
+|-----------------|---------------------|---------------------------------|
+| 0 to (2 16 - 1) | 320 to (2 16 + 319) | Identity of the logical channel |  
+Table 6.2.1-2b Values of one-octet eLCID for UL-SCH  
+| Codepoint   | Index     | LCID values                                  |
+|-------------|-----------|----------------------------------------------|
+| 0 to 249    | 64 to 313 | Reserved                                     |
+| 250         | 314       | BFR (four octets C i )                       |
+| 251         | 315       | Truncated BFR (four octets C i )             |
+| 252         | 316       | Multiple Entry Configured Grant Confirmation |
+| 253         | 317       | Sidelink Configured Grant Confirmation       |
+| 254         | 318       | Desired Guard Symbols                        |
+| 255         | 319       | Pre-emptive BSR                              |
+
+--- Chunk 4 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 3.2 Abbreviations / 
+## 3.2 Abbreviations  
+For the purposes of the present document, the abbreviations given in TR 21.905 [1] and the following apply. An abbreviation defined in the present document takes precedence over the definition of the same abbreviation, if any, in TR 21.905 [1].  
+| AP           | Aperiodic                                              |
+|--------------|--------------------------------------------------------|
+| BFR          | Beam Failure Recovery                                  |
+| BSR          | Buffer Status Report                                   |
+| BWP          | Bandwidth Part                                         |
+| CE           | Control Element                                        |
+| CG           | Cell Group                                             |
+| CI-RNTI      | Cancellation Indication RNTI                           |
+| CSI          | Channel State Information                              |
+| CSI-IM       | CSI Interference Measurement                           |
+| CSI-RS       | CSI Reference Signal                                   |
+| CS-RNTI      | Configured Scheduling RNTI                             |
+| DAPS         | Dual Active Protocol Stack                             |
+| DCP          | DCI with CRC scrambled by PS-RNTI                      |
+| DL-PRS       | DownLink-Positioning Reference Signal                  |
+| IAB          | Integrated Access and Backhaul                         |
+| INT-RNTI     | Interruption RNTI                                      |
+| LBT          | Listen Before Talk                                     |
+| LCG          | Logical Channel Group                                  |
+| LCP          | Logical Channel Prioritization                         |
+| MCG          | Master Cell Group                                      |
+| NUL          | Normal Uplink                                          |
+| NZP CSI-RS   | Non-Zero Power CSI-RS                                  |
+| PDB          | Packet Delay Budget                                    |
+| PHR          | Power Headroom Report                                  |
+| PS-RNTI      | Power Saving RNTI                                      |
+| PTAG         | Primary Timing Advance Group                           |
+| QCL          | Quasi-colocation                                       |
+| RS           | Reference Signal                                       |
+| SCG          | Secondary Cell Group                                   |
+| SFI-RNTI     | Slot Format Indication RNTI                            |
+| SI           | System Information                                     |
+| SL-RNTI      | Sidelink RNTI                                          |
+| SLCS-RNTI    | Sidelink Configured Scheduling RNTI                    |
+| SpCell       | Special Cell                                           |
+| SP           | Semi-Persistent                                        |
+| SP-CSI-RNTI  | Semi-Persistent CSI RNTI                               |
+| SPS          | Semi-Persistent Scheduling                             |
+| SR           | Scheduling Request                                     |
+| SS           | Synchronization Signals                                |
+| SSB          | Synchronization Signal Block                           |
+| STAG         | Secondary Timing Advance Group                         |
+| SUL          | Supplementary Uplink                                   |
+| TAG          | Timing Advance Group                                   |
+| TCI          | Transmission Configuration Indicator                   |
+| TPC-SRS-RNTI | Transmit Power Control-Sounding Reference Symbols-RNTI |
+| V2X          | Vehicle-to-Everything                                  |  
+ZP CSI-RS  
+Zero Power CSI-RS
+
+--- Chunk 5 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 7.1 RNTI values / 
+| CS-RNTI                                       | CS-RNTI                                                                                                                                                                                                   | Configured scheduled unicast transmission (deactivation)                                                                                                                                                  | N/A                                                                                                                                                                                                       | N/A                                                                                                                                                                                                       |
+| TPC-PUCCH-RNTI                                | TPC-PUCCH-RNTI                                                                                                                                                                                            | PUCCH power control                                                                                                                                                                                       | N/A                                                                                                                                                                                                       | N/A                                                                                                                                                                                                       |
+| TPC-PUSCH-RNTI                                | TPC-PUSCH-RNTI                                                                                                                                                                                            | PUSCH power control                                                                                                                                                                                       | N/A                                                                                                                                                                                                       | N/A                                                                                                                                                                                                       |
+| TPC-SRS-RNTI                                  | TPC-SRS-RNTI                                                                                                                                                                                              | SRS trigger and power control                                                                                                                                                                             | N/A                                                                                                                                                                                                       | N/A                                                                                                                                                                                                       |
+| INT-RNTI                                      | INT-RNTI                                                                                                                                                                                                  | Indication pre-emption in DL                                                                                                                                                                              | N/A                                                                                                                                                                                                       | N/A                                                                                                                                                                                                       |
+
+--- Chunk 6 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.1 Protocol Data Units / 6.1.3 MAC Control Elements (CEs)
+#### 6.1.3.9 Multiple Entry PHR MAC CE  
+The Multiple Entry PHR MAC CE is identified by a MAC subheader with LCID as specified in Table 6.2.1-2.  
+It has a variable size, and includes the bitmap, a Type 2 PH field and an octet containing the associated PCMAX,f,c field (if reported) for SpCell of the other MAC entity, a Type 1 PH field and an octet containing the associated PCMAX,f,c field (if reported) for the PCell. It further includes, in ascending order based on the ServCellIndex , one or multiple of Type X PH fields and octets containing the associated PCMAX,f,c fields (if reported) for Serving Cells other than PCell indicated in the bitmap. X is either 1 or 3 according to TS 38.213 [6] and TS 36.213 [17].  
+The presence of Type 2 PH field for SpCell of the other MAC entity is configured by phr-Type2OtherCell with value true .  
+A single octet bitmap is used for indicating the presence of PH per Serving Cell when the highest ServCellIndex of Serving Cell with configured uplink is less than 8, otherwise four octets are used.  
+The MAC entity determines whether PH value for an activated Serving Cell is based on real transmission or a reference format by considering the configured grant(s) and downlink control information which has been received until and including the PDCCH occasion in which the first UL grant for a new transmission that can accommodate the MAC CE for PHR as a result of LCP as defined in clause 5.4.3.1 is received since a PHR has been triggered if the PHR MAC CE is reported on an uplink grant received on the PDCCH or until the first uplink symbol of PUSCH transmission minus PUSCH preparation time as defined in clause 7.7 of TS 38.213 [6] if the PHR MAC CE is reported on a configured grant.  
+For a band combination in which the UE does not support dynamic power sharing, the UE may omit the octets containing Power Headroom field and PCMAX,f,c field for Serving Cells in the other MAC entity except for the PCell in the other MAC entity and the reported values of Power Headroom and PCMAX,f,c for the PCell are up to UE implementation.
+
+--- Chunk 7 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.1 Random Access procedure / 5.1.1 Random Access procedure initialization
+## 5.1 Random Access procedure  
+### 5.1.1 Random Access procedure initialization  
+The Random Access procedure described in this clause is initiated by a PDCCH order, by the MAC entity itself, or by RRC for the events in accordance with TS 38.300 [2]. There is only one Random Access procedure ongoing at any point in time in a MAC entity. The Random Access procedure on an SCell shall only be initiated by a PDCCH order with ra-PreambleIndex different from 0b000000.  
+- NOTE 1:  If a new Random Access procedure is triggered while another is already ongoing in the MAC entity, it is up to UE implementation whether to continue with the ongoing procedure or start with the new procedure (e.g. for SI request).
+- NOTE 2:  If there was an ongoing Random Access procedure that is triggered by a PDCCH order while the UE receives another PDCCH order indicating the same Random Access Preamble, PRACH mask index and uplink carrier, the Random Access procedure is considered as the same Random Access procedure as the ongoing one and not initialized again.  
+RRC configures the following parameters for the Random Access procedure:  
+- -prach-ConfigurationIndex : the available set of PRACH occasions for the transmission of the Random Access Preamble for Msg1. These are also applicable to the MSGA PRACH if the PRACH occasions are shared between 2-step and 4-step RA types;
+- -prach-ConfigurationPeriodScaling-IAB : the scaling factor defined in TS 38.211 [8] and applicable to IAB-MTs, extending the periodicity of the PRACH occasions baseline configuration indicated by prachConfigurationIndex ;
+- -prach-ConfigurationFrameOffset-IAB : the frame offset defined in TS 38.211 [8] and applicable to IAB-MTs, altering the ROs frame defined in the baseline configuration indicated by prach-ConfigurationIndex ;
+- -prach-ConfigurationSOffset-IAB : the subframe/slot offset defined in TS 38.211 [8] and applicable to IAB-MTs, altering the ROs subframe or slot defined in the baseline configuration indicated by prach-ConfigurationIndex ;
+- -msgA-prach-ConfigurationIndex : the available set of PRACH occasions for the transmission of the Random Access Preamble for MSGA in 2-step RA type;
+- -preambleReceivedTargetPower : initial Random Access Preamble power for 4-step RA type;
+- -msgA-PreambleReceivedTargetPower : initial Random Access Preamble power for 2-step RA type;
+- -rsrp-ThresholdSSB : an RSRP threshold for the selection of the SSB for 4-step RA type. If the Random Access procedure is initiated for beam failure recovery, rsrp-ThresholdSSB used for the selection of the SSB within candidateBeamRSList refers to rsrp-ThresholdSSB in BeamFailureRecoveryConfig IE;
+- -rsrp-ThresholdCSI-RS : an RSRP threshold for the selection of CSI-RS for 4-step RA type. If the Random Access procedure is initiated for beam failure recovery, rsrp-ThresholdCSI-RS is equal to rsrp-ThresholdSSB in BeamFailureRecoveryConfig IE;
+- -msgA-RSRP-ThresholdSSB : an RSRP threshold for the selection of the SSB for 2-step RA type;
+- -rsrp-ThresholdSSB-SUL : an RSRP threshold for the selection between the NUL carrier and the SUL carrier;
+- -msgA-RSRP-Threshold : an RSRP threshold for selection between 2-step RA type and 4-step RA type when both 2-step and 4-step RA type Random Access Resources are configured in the UL BWP;
+- -msgA-TransMax : The maximum number of MSGA transmissions when both 4-step and 2-step RA type Random Access Resources are configured;  
+- -candidateBeamRSList : a list of reference signals (CSI-RS and/or SSB) identifying the candidate beams for recovery and the associated Random Access parameters;
+- -recoverySearchSpaceId : the search space identity for monitoring the response of the beam failure recovery request;
+- -powerRampingStep : the power-ramping factor;
+- -msgA-PreamblePowerRampingStep : the power ramping factor for MSGA preamble;
+- -powerRampingStepHighPriority : the power-ramping factor in case of prioritized Random Access procedure;
+- -scalingFactorBI : a scaling factor for prioritized Random Access procedure;
+- -ra-PreambleIndex : Random Access Preamble;
+- -ra-ssb-OccasionMaskIndex : defines PRACH occasion(s) associated with an SSB in which the MAC entity may transmit a Random Access Preamble (see clause 7.4);
+- -msgA-SSB-SharedRO-MaskIndex : Indicates the subset of 4-step RA type PRACH occasions shared with 2-step RA type PRACH occasions for each SSB. If 2-step RA type PRACH occasions are shared with 4-step RA type PRACH occasions and msgA-SSB-SharedRO-MaskIndex is not configured, then all 4-step RA type PRACH occasions are available for 2-step RA type (see clause 7.4);
+- -ra-OccasionList : defines PRACH occasion(s) associated with a CSI-RS in which the MAC entity may transmit a Random Access Preamble;
+- -ra-PreambleStartIndex : the starting index of Random Access Preamble(s) for on-demand SI request;
+- -preambleTransMax : the maximum number of Random Access Preamble transmission;
+
+--- Chunk 8 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: The PHR MAC CEs are defined as follows: / 
+## The PHR MAC CEs are defined as follows:  
+- -Ci: This field indicates the presence of a PH field for the Serving Cell with ServCellIndex i as specified in TS 38.331 [5]. The Ci field set to 1 indicates that a PH field for the Serving Cell with ServCellIndex i is reported. The Ci field set to 0 indicates that a PH field for the Serving Cell with ServCellIndex i is not reported;
+- -R: Reserved bit, set to 0;
+- -V: This field indicates if the PH value is based on a real transmission or a reference format. For Type 1 PH, the V field set to 0 indicates real transmission on PUSCH and the V field set to 1 indicates that a PUSCH reference format is used. For Type 2 PH, the V field set to 0 indicates real transmission on PUCCH and the V field set to 1 indicates that a PUCCH reference format is used. For Type 3 PH, the V field set to 0 indicates real transmission on SRS and the V field set to 1 indicates that an SRS reference format is used. Furthermore, for Type 1, Type 2, and Type 3 PH, the V field set to 0 indicates the presence of the octet containing the associated PCMAX,f,c field, and the V field set to 1 indicates that the octet containing the associated PCMAX,f,c field is omitted;
+- -Power Headroom (PH): This field indicates the power headroom level. The length of the field is 6 bits. The reported PH and the corresponding power headroom levels are shown in Table 6.1.3.8-1 (the corresponding measured values in dB for the NR Serving Cell are specified in TS 38.133 [11] while the corresponding measured values in dB for the E-UTRA Serving Cell are specified in TS 36.133 [12]);
+- -P: This field indicates whether the MAC entity applies power backoff due to power management (as allowed by P-MPRc as specified in TS 38.101-1 [14], TS 38.101-2 [15], and TS 38.101-3 [16]). The MAC entity shall set the P field to 1 if the corresponding PCMAX,f,c field would have had a different value if no power backoff due to power management had been applied;  
+̃  
+- -PCMAX,f,c: If present, this field indicates the PCMAX,f,c (as specified in TS 38.213 [6]) for the NR Serving Cell and the PCMAX,c or P CMAX,c (as specified in TS 36.213 [17]) for the E-UTRA Serving Cell used for calculation of the preceding PH field. The reported PCMAX,f,c and the corresponding nominal UE transmit power levels are shown in Table 6.1.3.8-2 (the corresponding measured values in dBm for the NR Serving Cell are specified in TS 38.133 [11] while the corresponding measured values in dBm for the E-UTRA Serving Cell are specified in TS 36.133 [12]).  
+Figure 6.1.3.9-1: Multiple Entry PHR MAC CE with the highest ServCellIndex of Serving Cell with configured uplink is less than 8  
+| C 7   | C 6   | C 5                                         | C 4                                         | C 3                                         | C 2                                         | C 1                                         | R                                           |
+|-------|-------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|
+| P     | V     | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) |
+| R     | R     | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                |
+| P     | V     | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          |
+| R     | R     | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                |
+| P     | V     | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 |
+
+--- Chunk 9 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.18 Handling of MAC CEs / 5.18.18  Timing offset adjustment for IAB
+### 5.18.18  Timing offset adjustment for IAB  
+For IAB operation, in order to achieve time-domain synchronization across multiple backhaul hops, a timing adjustment Tdelta may be provided to an IAB node by its parent node. This parameter is applicable only to IAB nodes. The Timing Delta MAC CE carries Tdelta, mapped to an index value Tdelta .  
+Upon reception of a Timing Delta MAC CE the IAB node shall:  
+- -apply the index value of Tdelta as specified in TS 38.213 [6].

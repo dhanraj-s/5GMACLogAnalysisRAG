@@ -1,0 +1,1 @@
+Invalid timing advance offset for RNTI ffd4 UE ffd4: reported RSRP index  invalid Received unknown MAC header (LCID = [HW] releasing USRP Allocating shared L1/L2 interface structure for instance 0 @ 0x5cad39cffba0

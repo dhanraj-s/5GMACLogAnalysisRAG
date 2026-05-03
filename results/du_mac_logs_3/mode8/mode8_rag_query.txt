@@ -1,0 +1,1 @@
+Unexpected ULSCH HARQ PID 0 (have -1) for RNTI  (ignore this warning for RA) Invalid timing advance offset for RNTI ffd4 In nr_process_mac_pdu: residual UL MAC PDU in 117.7 with length < 0!, pdu_len -15738 Received unknown MAC header (LCID = UE ffd4: Detected UL Failure on PUSCH after  PUSCH DTX, stopping scheduling

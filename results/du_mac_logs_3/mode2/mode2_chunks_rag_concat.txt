@@ -1,0 +1,277 @@
+--- Chunk 1 ---
+Source: docs_md/mac-usage_example_removed.md | Section: Periodic output and interpretation / 
+## Periodic output and interpretation  
+The scheduler periodically outputs statistics that can help you judge the radio
+channel quality, i.e., why a UE does not perform as you would expect. The
+scheduler outputs this info in log level "INFO". The same information is also
+available in the the file `nrMAC-stats.log` in the same directory in which
+`nr-softmodem` is run.  
+In the first line,  
+* `UE RNTI` (here `2460`): this is also used as the DU UE ID over F1; each line
+is prepended with the RNTI
+* `CU UE ID` (`2`): separate identifier from the RNTI to handle multiple
+UEs across DUs (in which case RNTI conflicts are possible)
+* whether a UE is `in-sync` (actively being scheduled) or `out-of-sync` (the UE
+is not being scheduled, because it did not respond when being scheduled in UL
+or since it has radio-link failure
+* `PH` (`28`): Power Headroom, the amount of power the UE has left. If it is > 40 you
+can achieve full UL throughput. `PCMAX` (`24 dBm`) is what the UE reported as
+maximum UL transmit power it can output in the channel.
+* `RSRP` (`-74`): measured power of the DL reference signals at the UE. >-80dBm
+you should have full DL throughput. <-95 dBm, you are very limited in terms
+of connectivity.
+* `SINR` (`40.0`): measured signal to interference and noise ratio of the SSB
+received at the UE. Maximum value that can be reported by the UE is 40.0 dB.  
+The second and third line reflect channel state information (CSI) as
+reported by the UE, and only appear if CSI-RS/SRS are enabled and _received_
+(for some bands, they cannot be enabled):  
+* `CQI` (`15`): the channel quality indicator is a number between 0 and 15. It
+indicates the achievable spectral efficiency of the UE. 15 means highest, 0
+is lowest. This corresponds to a 4-bit table in 38.214 with actual spectral
+efficiencies in bits/s/Hz
+* `RI`: Rank indicator 1-4. If 1 it means limited to 1 layer transmission on DL. 2 two layers, etc.
+* `PMI`: precoding matrix indicator. It's a measure of the spatial-direction of
+the gNBs transmit array as seen by the UE. It indicates the precoding that
+the gNB applies. It should be more or less stationary unless the UE is moving
+around quickly. It can jump when objects move around the UE
+* `UL-RI`, `TPMI`: same as DL.  
+The fourth and fifth line show HARQ-related information:  
+* `dlsch_rounds A/B/C/D` (`32917/5113/1504/560`). This is the number of
+transmissions by the gNB for each round of the HARQ protocol. `A` is the first
+round, B is the second, etc. If `A` is high and `B` is low, `C` is lower and `D` is
+around 0, then things work well. If `B` is around the same as `A`, then the first
+round is almost always in error. This is not usually good unless the UE is
+far from the gNB.
+* `dlsch_errors` (`211`) is the number of errors, meaning that after 4
+transmissions the MAC transport block was not received by the UE. A high
+number is not good/it should be a very low number, again unless there are
+severe radio conditions.
+* `pucch0_DTX`: this is the number of PUCCH format 0 (or 1 later) missed
+detections (unreceived ack/nak). This means that either the UL is very bad
+and ACK/NAK cannot be conveyed properly or DL DCIs are missed by the UE. This
+is also something that should be very small compared to `A` in
+`dlsch_rounds`.
+* `(SNR x+y dB)`: PUCCH SNR where `x` is the average PUCCH SNR and `y` the
+difference to the target (positive: above SNR, negative: below)
+* `DLSCH BLER` is the current measured block-error rate of the DLSCH. Basically
+a moving average of `B`/`A` in `dlsch_rounds`. This is something that should always
+be close to the target bler that the MAC scheduler uses. typically 10-30% if
+we want a high throughput scheduling policy.
+* `MCS (Q) M`: M (0-28) is the current MCS used by the MAC scheduler and Q is
+the mcs table: 0=64QAM, 1=256QAM, 2=low SE table for URLLC
+* `ulsch_rounds`/`ulsch_errors`: same as DLSCH but for UL.
+* `ulsch_DTX` (`285`): number of PUSCH missed detection (i.e. signal energy below
+threshold in configuration file, `L1s.pusch_dtx_threshold`, which is 10 times the
+actual unnormalized digital signal level). This is an indication of either
+very poor radio conditions (UE cannot reach the gNB), power control problems,
+or missed DCI 0\_x DCIs. It should be low compared to `A` in `ulsch_rounds`
+when things are working properly.
+* ULSCH `BLER/MCS`: same as DLSCH but for UL.
+* ULSCH `Qm X deltaMCS Y dB`: modulation order: 2=QPSK, 4=16QAM, 6=64QAM,
+8=256QAM and the dB offset for deltaMCS component in PUSCH power control law.
+If deltaMCS is disabled (this is the default) then it indicates 0. When
+deltaMCS is enabled it indicates the current power offset applied by the UE
+on the UL corresponding to the scheduled MCS
+* ULSCH `NPRB`: current number of PRBs scheduled by the gNB. This will
+fluctuate a lot but when doing high throughput with iperf, it indicates the
+number of PRBs that the UE is actually able to use with its power budget and
+should be high.
+
+--- Chunk 2 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.2 Formats and parameters / 6.2.3a MAC payload for MSGB
+### 6.2.3a MAC payload for MSGB  
+The fallbackRAR is of fixed size as depicted in Figure 6.2.3a-1, and consists of the following fields:  
+- -R: Reserved bit, set to "0";
+- -Timing Advance Command: The Timing Advance Command field indicates the index value TA used to control the amount of timing adjustment that the MAC entity has to apply in TS 38.213 [6]. The size of the Timing Advance Command field is 12 bits;
+- -UL Grant: The Uplink Grant field indicates the resources to be used on the uplink in TS 38.213 [6]. The size of the UL Grant field is 27 bits;
+- -Temporary C-RNTI: The Temporary C-RNTI field indicates the temporary identity that is used by the MAC entity during Random Access. The size of the Temporary C-RNTI field is 16 bits.  
+The fallbackRAR is octet aligned.  
+Figure 6.2.3a-1: fallbackRAR  
+<!-- image -->  
+The successRAR is of fixed size as depicted in Figure 6.2.3a-2, and consists of the following fields:  
+- -UE Contention Resolution Identity: This field contains the UL CCCH SDU. If the UL CCCH SDU is longer than 48 bits, this field contains the first 48 bits of the UL CCCH SDU.
+- -R: Reserved bit, set to "0";
+- -ChannelAccess-CPext: The channel access type and CP extension for the PUCCH resource containing the HARQ feedback for MSGB in shared spectrum channel access as specified in TS 38.213 [6]. The field is only present when the MSGB HARQ feedback is to be transmitted with shared spectrum channel access as specified in TS 37.213 [18]. Otherwise, the field is not present and R bits are present instead. The size of the ChannelAccess-CPext field is 2 bits;
+- -TPC: The TPC command for the PUCCH resource containing HARQ feedback for MSGB, as specified in TS 38.213 [6]. The size of the TPC field is 2 bits;
+- -HARQ Feedback Timing Indicator: The PDSCH-to-HARQ feedback timing indicator field for MSGB HARQ feedback as specified in TS 38.213 [6]. The size of the HARQ Feedback Timing Indicator field is 3 bits;
+- -PUCCH Resource Indicator: The PUCCH resource indicator for HARQ feedback for MSGB, as specified in TS 38.213[6]. The size of the PUCCH resource Indicator field is 4 bits;
+- -Timing Advance Command: The Timing Advance Command field indicates the index value TA used to control the amount of timing adjustment that the MAC entity has to apply in TS 38.213 [6]. The size of the Timing Advance Command field is 12 bits;
+- -C-RNTI: The C-RNTI field indicates the identity that is used by the MAC entity upon completion of Random Access. The size of the C-RNTI field is 16 bits.  
+The successRAR is octet aligned.  
+Figure 6.2.3a-2: successRAR  
+<!-- image -->  
+| UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | Oct 1   |
+|-------------------------------------|-------------------------------------|-------------------------------------|-------------------------------------|-------------------------------------|---------|
+| UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | Oct 2   |
+| UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | Oct 3   |
+| UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | Oct 4   |
+| UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | Oct 5   |
+| UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | UE Contention Resolution Identity   | Oct 6   |
+| R                                   | Channel Access-CPext                | TPC                                 | TPC                                 | HARQ Feedback Timing Indicator      | Oct 7   |
+| PUCCH Resource Indicator            | PUCCH Resource Indicator            | PUCCH Resource Indicator            | Timing Advance Command              | Timing Advance Command              | Oct 8   |
+| Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Oct 9   |
+| C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | Oct 10  |
+
+--- Chunk 3 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.2 Formats and parameters / 6.2.3a MAC payload for MSGB
+| Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Timing Advance Command              | Oct 9   |
+| C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | Oct 10  |
+| C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | C-RNTI                              | Oct 11  |
+
+--- Chunk 4 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 6.2 Formats and parameters / 6.2.1 MAC subheader for DL-SCH and UL-SCH
+|-------------|-----------|-------------------------------------------------------------------|
+| 0 to 244    | 64 to 308 | Reserved                                                          |
+| 245         | 309       | Serving Cell Set based SRS Spatial Relation Indication            |
+| 246         | 310       | PUSCH Pathloss Reference RS Update                                |
+| 247         | 311       | SRS Pathloss Reference RS Update                                  |
+| 248         | 312       | Enhanced SP/AP SRS Spatial Relation Indication                    |
+| 249         | 313       | Enhanced PUCCH Spatial Relation Activation/Deactivation           |
+| 250         | 314       | Enhanced TCI States Activation/Deactivation for UE-specific PDSCH |
+| 251         | 315       | Duplication RLC Activation/Deactivation                           |
+| 252         | 316       | Absolute Timing Advance Command                                   |
+| 253         | 317       | SP Positioning SRS Activation/Deactivation                        |
+| 254         | 318       | Provided Guard Symbols                                            |
+| 255         | 319       | Timing Delta                                                      |  
+Table 6.2.1-2 Values of LCID for UL-SCH  
+| Codepoint/Index   | LCID values                                                    |
+|-------------------|----------------------------------------------------------------|
+| 0                 | CCCH of size 64 bits (referred to as "CCCH1" in TS 38.331 [5]) |
+| 1-32              | Identity of the logical channel                                |
+| 33                | Extended logical channel ID field (two-octet eLCID field)      |
+| 34                | Extended logical channel ID field (one-octet eLCID field)      |
+| 35-44             | Reserved                                                       |
+| 45                | Truncated Sidelink BSR                                         |
+| 46                | Sidelink BSR                                                   |
+| 47                | Reserved                                                       |
+| 48                | LBT failure (four octets)                                      |
+| 49                | LBT failure (one octet)                                        |
+| 50                | BFR (one octet C i )                                           |
+| 51                | Truncated BFR (one octet C i )                                 |
+| 52                | CCCH of size 48 bits (referred to as "CCCH" in TS 38.331 [5])  |
+| 53                | Recommended bit rate query                                     |
+| 54                | Multiple Entry PHR (four octets C i )                          |
+| 55                | Configured Grant Confirmation                                  |
+| 56                | Multiple Entry PHR (one octet C i )                            |
+| 57                | Single Entry PHR                                               |
+| 58                | C-RNTI                                                         |
+| 59                | Short Truncated BSR                                            |
+| 60                | Long Truncated BSR                                             |
+| 61                | Short BSR                                                      |
+| 62                | Long BSR                                                       |
+| 63                | Padding                                                        |  
+Table 6.2.1-2a Values of two-octet eLCID for UL-SCH  
+| Codepoint       | Index               | LCID values                     |
+|-----------------|---------------------|---------------------------------|
+| 0 to (2 16 - 1) | 320 to (2 16 + 319) | Identity of the logical channel |  
+Table 6.2.1-2b Values of one-octet eLCID for UL-SCH  
+| Codepoint   | Index     | LCID values                                  |
+|-------------|-----------|----------------------------------------------|
+| 0 to 249    | 64 to 313 | Reserved                                     |
+| 250         | 314       | BFR (four octets C i )                       |
+| 251         | 315       | Truncated BFR (four octets C i )             |
+| 252         | 316       | Multiple Entry Configured Grant Confirmation |
+| 253         | 317       | Sidelink Configured Grant Confirmation       |
+| 254         | 318       | Desired Guard Symbols                        |
+| 255         | 319       | Pre-emptive BSR                              |
+
+--- Chunk 5 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.13 Handling of unknown, unforeseen and erroneous protocol data / 
+## 5.13 Handling of unknown, unforeseen and erroneous protocol data  
+When a MAC entity receives a MAC PDU for the MAC entity's C-RNTI or CS-RNTI, or by the configured downlink assignment, containing a Reserved LCID or eLCID value, or an LCID or eLCID value the MAC Entity does not support, the MAC entity shall at least:  
+1> discard the received subPDU and any remaining subPDUs in the MAC PDU.  
+When a MAC entity receives a MAC PDU for the MAC entity's C-RNTI or CS-RNTI, or by the configured downlink assignment, containing an LCID or eLCID value which is not configured, the MAC entity shall at least:  
+1> discard the received subPDU.  
+When a MAC entity receives a MAC PDU on SL-SCH containing a Reserved LCID value for broadcast or groupcast, or an LCID value which is not configured, the MAC entity shall:  
+1> discard the received subPDU.  
+When a MAC entity receives a MAC PDU on SL-SCH containing a Reserved LCID value for unicast, the MAC entity shall:  
+1> discard the received subPDU and any remaining subPDUs in the MAC PDU.
+
+--- Chunk 6 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.1 Random Access procedure / 5.1.1 Random Access procedure initialization
+## 5.1 Random Access procedure  
+### 5.1.1 Random Access procedure initialization  
+The Random Access procedure described in this clause is initiated by a PDCCH order, by the MAC entity itself, or by RRC for the events in accordance with TS 38.300 [2]. There is only one Random Access procedure ongoing at any point in time in a MAC entity. The Random Access procedure on an SCell shall only be initiated by a PDCCH order with ra-PreambleIndex different from 0b000000.  
+- NOTE 1:  If a new Random Access procedure is triggered while another is already ongoing in the MAC entity, it is up to UE implementation whether to continue with the ongoing procedure or start with the new procedure (e.g. for SI request).
+- NOTE 2:  If there was an ongoing Random Access procedure that is triggered by a PDCCH order while the UE receives another PDCCH order indicating the same Random Access Preamble, PRACH mask index and uplink carrier, the Random Access procedure is considered as the same Random Access procedure as the ongoing one and not initialized again.  
+RRC configures the following parameters for the Random Access procedure:  
+- -prach-ConfigurationIndex : the available set of PRACH occasions for the transmission of the Random Access Preamble for Msg1. These are also applicable to the MSGA PRACH if the PRACH occasions are shared between 2-step and 4-step RA types;
+- -prach-ConfigurationPeriodScaling-IAB : the scaling factor defined in TS 38.211 [8] and applicable to IAB-MTs, extending the periodicity of the PRACH occasions baseline configuration indicated by prachConfigurationIndex ;
+- -prach-ConfigurationFrameOffset-IAB : the frame offset defined in TS 38.211 [8] and applicable to IAB-MTs, altering the ROs frame defined in the baseline configuration indicated by prach-ConfigurationIndex ;
+- -prach-ConfigurationSOffset-IAB : the subframe/slot offset defined in TS 38.211 [8] and applicable to IAB-MTs, altering the ROs subframe or slot defined in the baseline configuration indicated by prach-ConfigurationIndex ;
+- -msgA-prach-ConfigurationIndex : the available set of PRACH occasions for the transmission of the Random Access Preamble for MSGA in 2-step RA type;
+- -preambleReceivedTargetPower : initial Random Access Preamble power for 4-step RA type;
+- -msgA-PreambleReceivedTargetPower : initial Random Access Preamble power for 2-step RA type;
+- -rsrp-ThresholdSSB : an RSRP threshold for the selection of the SSB for 4-step RA type. If the Random Access procedure is initiated for beam failure recovery, rsrp-ThresholdSSB used for the selection of the SSB within candidateBeamRSList refers to rsrp-ThresholdSSB in BeamFailureRecoveryConfig IE;
+- -rsrp-ThresholdCSI-RS : an RSRP threshold for the selection of CSI-RS for 4-step RA type. If the Random Access procedure is initiated for beam failure recovery, rsrp-ThresholdCSI-RS is equal to rsrp-ThresholdSSB in BeamFailureRecoveryConfig IE;
+- -msgA-RSRP-ThresholdSSB : an RSRP threshold for the selection of the SSB for 2-step RA type;
+- -rsrp-ThresholdSSB-SUL : an RSRP threshold for the selection between the NUL carrier and the SUL carrier;
+- -msgA-RSRP-Threshold : an RSRP threshold for selection between 2-step RA type and 4-step RA type when both 2-step and 4-step RA type Random Access Resources are configured in the UL BWP;
+- -msgA-TransMax : The maximum number of MSGA transmissions when both 4-step and 2-step RA type Random Access Resources are configured;  
+- -candidateBeamRSList : a list of reference signals (CSI-RS and/or SSB) identifying the candidate beams for recovery and the associated Random Access parameters;
+- -recoverySearchSpaceId : the search space identity for monitoring the response of the beam failure recovery request;
+- -powerRampingStep : the power-ramping factor;
+- -msgA-PreamblePowerRampingStep : the power ramping factor for MSGA preamble;
+- -powerRampingStepHighPriority : the power-ramping factor in case of prioritized Random Access procedure;
+- -scalingFactorBI : a scaling factor for prioritized Random Access procedure;
+- -ra-PreambleIndex : Random Access Preamble;
+- -ra-ssb-OccasionMaskIndex : defines PRACH occasion(s) associated with an SSB in which the MAC entity may transmit a Random Access Preamble (see clause 7.4);
+- -msgA-SSB-SharedRO-MaskIndex : Indicates the subset of 4-step RA type PRACH occasions shared with 2-step RA type PRACH occasions for each SSB. If 2-step RA type PRACH occasions are shared with 4-step RA type PRACH occasions and msgA-SSB-SharedRO-MaskIndex is not configured, then all 4-step RA type PRACH occasions are available for 2-step RA type (see clause 7.4);
+- -ra-OccasionList : defines PRACH occasion(s) associated with a CSI-RS in which the MAC entity may transmit a Random Access Preamble;
+- -ra-PreambleStartIndex : the starting index of Random Access Preamble(s) for on-demand SI request;
+- -preambleTransMax : the maximum number of Random Access Preamble transmission;
+
+--- Chunk 7 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.8 Transmission and reception without dynamic scheduling / 5.8.2 Uplink
+### 5.8.2 Uplink  
+There are two types of transmission without dynamic grant:  
+- -configured grant Type 1 where an uplink grant is provided by RRC, and stored as configured uplink grant;
+- -configured grant Type 2 where an uplink grant is provided by PDCCH, and stored or cleared as configured uplink grant based on L1 signalling indicating configured uplink grant activation or deactivation.  
+Type 1 and Type 2 are configured by RRC per Serving Cell and per BWP. Multiple configurations can be active simultaneously in the same BWP. For Type 2, activation and deactivation are independent among the Serving Cells. For the same BWP, the MAC entity can be configured with both Type 1 and Type 2.  
+RRC configures the following parameters when the configured grant Type 1 is configured:  
+- -cs-RNTI : CS-RNTI for retransmission;
+- -periodicity : periodicity of the configured grant Type 1;
+- -timeDomainOffset : Offset of a resource with respect to SFN = timeReferenceSFN in time domain;
+- -timeDomainAllocation : Allocation of configured uplink grant in time domain which contains startSymbolAndLength (i.e. SLIV in TS 38.214 [7]) or startSymbol (i.e. S in TS 38.214 [7]);
+- -nrofHARQ-Processes : the number of HARQ processes for configured grant;
+- -harq-ProcID-Offset : offset of HARQ process for configured grant for operation with shared spectrum channel access;  
+- -harq-ProcID-Offset2 : offset of HARQ process for configured grant;
+- -timeReferenceSFN : SFN used for determination of the offset of a resource in time domain. The UE uses the closest SFN with the indicated number preceding the reception of the configured grant configuration.  
+RRC configures the following parameters when the configured grant Type 2 is configured:  
+- -cs-RNTI : CS-RNTI for activation, deactivation, and retransmission;
+- -periodicity : periodicity of the configured grant Type 2;
+- -nrofHARQ-Processes : the number of HARQ processes for configured grant;
+- -harq-ProcID-Offset : offset of HARQ process for configured grant for operation with shared spectrum channel access;
+- -harq-ProcID-Offset2 : offset of HARQ process for configured grant.  
+RRC configures the following parameters when retransmissions on configured uplink grant is configured:  
+- -cg-RetransmissionTimer : the duration after a configured grant (re)transmission of a HARQ process when the UE shall not autonomously retransmit that HARQ process.  
+Upon configuration of a configured grant Type 1 for a Serving Cell by upper layers, the MAC entity shall:  
+- 1> store the uplink grant provided by upper layers as a configured uplink grant for the indicated Serving Cell;
+- 1> initialise or re-initialise the configured uplink grant to start in the symbol according to timeDomainOffset , timeReferenceSFN , and S (derived from SLIV or provided by startSymbol as specified in TS 38.214 [7]), and to reoccur with periodicity .  
+After an uplink grant is configured for a configured grant Type 1, the MAC entity shall consider sequentially that the N th (N >= 0) uplink grant occurs in the symbol for which:  
+```
+[(SFN × numberOfSlotsPerFrame × numberOfSymbolsPerSlot ) + (slot number in the frame × numberOfSymbolsPerSlot ) + symbol number in the slot] = ( timeReferenceSFN × numberOfSlotsPerFrame × numberOfSymbolsPerSlot + timeDomainOffset × numberOfSymbolsPerSlot + S + N × periodicity ) modulo (1024 × numberOfSlotsPerFrame × numberOfSymbolsPerSlot ).
+```  
+After an uplink grant is configured for a configured grant Type 2, the MAC entity shall consider sequentially that the N th (N >= 0) uplink grant occurs in the symbol for which:  
+[(SFN × numberOfSlotsPerFrame × numberOfSymbolsPerSlot  
+numberOfSymbolsPerSlot  
+```
+) + (slot number in the frame × ) + symbol number in the slot] =
+```  
+[(SFNstart time × numberOfSlotsPerFrame × numberOfSymbolsPerSlot + slotstart time × numberOfSymbolsPerSlot + symbolstart time) + N × periodicity ] modulo (1024 × numberOfSlotsPerFrame × numberOfSymbolsPerSlot ).  
+where SFNstart time, slotstart time, and symbolstart time are the SFN, slot, and symbol, respectively, of the first transmission opportunity of PUSCH where the configured uplink grant was (re-)initialised.  
+NOTE: In case of unaligned SFN across carriers in a cell group, the SFN of the concerned Serving Cell is used to calculate the occurrences of configured uplink grants.  
+When the configured uplink grant is released by upper layers, all the corresponding configurations shall be released and all corresponding uplink grants shall be cleared.  
+The MAC entity shall:  
+1> if at least one configured uplink grant confirmation has been triggered and not cancelled; and  
+1> if the MAC entity has UL resources allocated for new transmission:  
+2> if the MAC entity is configured with configuredGrantConfigList :  
+- 3> instruct the Multiplexing and Assembly procedure to generate a Multiple Entry Configured Grant Confirmation MAC CE as defined in clause 6.1.3.31.  
+2> else:
+
+--- Chunk 8 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.18 Handling of MAC CEs / 5.18.18  Timing offset adjustment for IAB
+### 5.18.18  Timing offset adjustment for IAB  
+For IAB operation, in order to achieve time-domain synchronization across multiple backhaul hops, a timing adjustment Tdelta may be provided to an IAB node by its parent node. This parameter is applicable only to IAB nodes. The Timing Delta MAC CE carries Tdelta, mapped to an index value Tdelta .  
+Upon reception of a Timing Delta MAC CE the IAB node shall:  
+- -apply the index value of Tdelta as specified in TS 38.213 [6].

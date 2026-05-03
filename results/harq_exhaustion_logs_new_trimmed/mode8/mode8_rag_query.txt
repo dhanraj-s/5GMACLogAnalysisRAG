@@ -1,0 +1,1 @@
+NR HARQ NACK  for RNTI=1  *** HARQ EXHAUSTED → scheduling stall [MAC  DL SCHED | Frame  Slot  | RNTI 1 | MCS  | TBS 136 B | HARQ [PHY  CQI FEEDBACK | RNTI 1 | WB-CQI  | MCS  | RI 1 NR HARQ NACK  for RNTI=1 [MAC  DL HARQ | RNTI 1 | PID  |  | Retx

@@ -1,0 +1,1 @@
+NR HARQ NACK  for RNTI=1 [MAC  DL HARQ | RNTI 1 | PID  |  | Retx NR HARQ NACK  for RNTI=1  *** HARQ EXHAUSTED → scheduling stall [RRC   RX | IMSI 1 | Cell 1 | RNTI 1 [PHY ][0.400000] UE MEAS | RNTI 1 | RSRP -137.41 dBm | RSRQ 0.00 dB | Serv Y CC 0

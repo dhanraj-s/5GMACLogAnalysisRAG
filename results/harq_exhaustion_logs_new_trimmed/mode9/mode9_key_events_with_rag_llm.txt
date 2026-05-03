@@ -1,0 +1,5 @@
+1. <*> NR HARQ NACK <*> for RNTI=1 <*> *** HARQ EXHAUSTED → scheduling stall
+2. [MAC <*> DL SCHED | Frame <*> Slot <*> | RNTI 1 | MCS <MCS_INVALID> | TBS 136 B | HARQ <*>
+3. [PHY <*> CQI FEEDBACK | RNTI 1 | WB-CQI <CQI_INVALID> | MCS <MCS_INVALID> | RI 1
+4. <*> NR HARQ NACK <*> for RNTI=1 <*>
+5. [MAC <*> DL HARQ | RNTI 1 | PID <*> | <*> | Retx <*>

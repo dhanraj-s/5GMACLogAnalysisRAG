@@ -1,0 +1,324 @@
+--- Chunk 1 ---
+Source: docs_md/mac-usage_example_removed.md | Section: Periodic output and interpretation / 
+## Periodic output and interpretation  
+The scheduler periodically outputs statistics that can help you judge the radio
+channel quality, i.e., why a UE does not perform as you would expect. The
+scheduler outputs this info in log level "INFO". The same information is also
+available in the the file `nrMAC-stats.log` in the same directory in which
+`nr-softmodem` is run.  
+In the first line,  
+* `UE RNTI` (here `2460`): this is also used as the DU UE ID over F1; each line
+is prepended with the RNTI
+* `CU UE ID` (`2`): separate identifier from the RNTI to handle multiple
+UEs across DUs (in which case RNTI conflicts are possible)
+* whether a UE is `in-sync` (actively being scheduled) or `out-of-sync` (the UE
+is not being scheduled, because it did not respond when being scheduled in UL
+or since it has radio-link failure
+* `PH` (`28`): Power Headroom, the amount of power the UE has left. If it is > 40 you
+can achieve full UL throughput. `PCMAX` (`24 dBm`) is what the UE reported as
+maximum UL transmit power it can output in the channel.
+* `RSRP` (`-74`): measured power of the DL reference signals at the UE. >-80dBm
+you should have full DL throughput. <-95 dBm, you are very limited in terms
+of connectivity.
+* `SINR` (`40.0`): measured signal to interference and noise ratio of the SSB
+received at the UE. Maximum value that can be reported by the UE is 40.0 dB.  
+The second and third line reflect channel state information (CSI) as
+reported by the UE, and only appear if CSI-RS/SRS are enabled and _received_
+(for some bands, they cannot be enabled):  
+* `CQI` (`15`): the channel quality indicator is a number between 0 and 15. It
+indicates the achievable spectral efficiency of the UE. 15 means highest, 0
+is lowest. This corresponds to a 4-bit table in 38.214 with actual spectral
+efficiencies in bits/s/Hz
+* `RI`: Rank indicator 1-4. If 1 it means limited to 1 layer transmission on DL. 2 two layers, etc.
+* `PMI`: precoding matrix indicator. It's a measure of the spatial-direction of
+the gNBs transmit array as seen by the UE. It indicates the precoding that
+the gNB applies. It should be more or less stationary unless the UE is moving
+around quickly. It can jump when objects move around the UE
+* `UL-RI`, `TPMI`: same as DL.  
+The fourth and fifth line show HARQ-related information:  
+* `dlsch_rounds A/B/C/D` (`32917/5113/1504/560`). This is the number of
+transmissions by the gNB for each round of the HARQ protocol. `A` is the first
+round, B is the second, etc. If `A` is high and `B` is low, `C` is lower and `D` is
+around 0, then things work well. If `B` is around the same as `A`, then the first
+round is almost always in error. This is not usually good unless the UE is
+far from the gNB.
+* `dlsch_errors` (`211`) is the number of errors, meaning that after 4
+transmissions the MAC transport block was not received by the UE. A high
+number is not good/it should be a very low number, again unless there are
+severe radio conditions.
+* `pucch0_DTX`: this is the number of PUCCH format 0 (or 1 later) missed
+detections (unreceived ack/nak). This means that either the UL is very bad
+and ACK/NAK cannot be conveyed properly or DL DCIs are missed by the UE. This
+is also something that should be very small compared to `A` in
+`dlsch_rounds`.
+* `(SNR x+y dB)`: PUCCH SNR where `x` is the average PUCCH SNR and `y` the
+difference to the target (positive: above SNR, negative: below)
+* `DLSCH BLER` is the current measured block-error rate of the DLSCH. Basically
+a moving average of `B`/`A` in `dlsch_rounds`. This is something that should always
+be close to the target bler that the MAC scheduler uses. typically 10-30% if
+we want a high throughput scheduling policy.
+* `MCS (Q) M`: M (0-28) is the current MCS used by the MAC scheduler and Q is
+the mcs table: 0=64QAM, 1=256QAM, 2=low SE table for URLLC
+* `ulsch_rounds`/`ulsch_errors`: same as DLSCH but for UL.
+* `ulsch_DTX` (`285`): number of PUSCH missed detection (i.e. signal energy below
+threshold in configuration file, `L1s.pusch_dtx_threshold`, which is 10 times the
+actual unnormalized digital signal level). This is an indication of either
+very poor radio conditions (UE cannot reach the gNB), power control problems,
+or missed DCI 0\_x DCIs. It should be low compared to `A` in `ulsch_rounds`
+when things are working properly.
+* ULSCH `BLER/MCS`: same as DLSCH but for UL.
+* ULSCH `Qm X deltaMCS Y dB`: modulation order: 2=QPSK, 4=16QAM, 6=64QAM,
+8=256QAM and the dB offset for deltaMCS component in PUSCH power control law.
+If deltaMCS is disabled (this is the default) then it indicates 0. When
+deltaMCS is enabled it indicates the current power offset applied by the UE
+on the UL corresponding to the scheduled MCS
+* ULSCH `NPRB`: current number of PRBs scheduled by the gNB. This will
+fluctuate a lot but when doing high throughput with iperf, it indicates the
+number of PRBs that the UE is actually able to use with its power budget and
+should be high.
+
+--- Chunk 2 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.3 DL-SCH data transfer / 5.3.2 HARQ operation
+#### 5.3.2.2 HARQ process  
+When a transmission takes place for the HARQ process, one or two (in case of downlink spatial multiplexing) TBs and the associated HARQ information are received from the HARQ entity.  
+For each received TB and associated HARQ information, the HARQ process shall:  
+- 1> if the NDI, when provided, has been toggled compared to the value of the previous received transmission corresponding to this TB; or
+- 1> if the HARQ process is equal to the broadcast process, and this is the first received transmission for the TB according to the system information schedule indicated by RRC; or
+- 1> if this is the very first received transmission for this TB (i.e. there is no previous NDI for this TB):  
+2> consider this transmission to be a new transmission.  
+1> else:  
+2> consider this transmission to be a retransmission.  
+The MAC entity then shall:  
+1> if this is a new transmission:  
+2> attempt to decode the received data.  
+1> else if this is a retransmission:  
+- 2> if the data for this TB has not yet been successfully decoded:
+- 3> instruct the physical layer to combine the received data with the data currently in the soft buffer for this TB and attempt to decode the combined data.
+- 1> if the data which the MAC entity attempted to decode was successfully decoded for this TB; or  
+1> if the data for this TB was successfully decoded before:  
+- 2> if the HARQ process is equal to the broadcast process:  
+3> deliver the decoded MAC PDU to upper layers.  
+- 2> else if this is the first successful decoding of the data for this TB:  
+3> deliver the decoded MAC PDU to the disassembly and demultiplexing entity.  
+1> else:  
+- 2> instruct the physical layer to replace the data in the soft buffer for this TB with the data which the MAC entity attempted to decode.
+- 1> if the HARQ process is associated with a transmission indicated with a Temporary C-RNTI and the Contention Resolution is not yet successful (see clause 5.1.5); or
+- 1> if the HARQ process is associated with a transmission indicated with a MSGB-RNTI and the Random Access procedure is not yet successfully completed (see clause 5.1.4a); or
+- 1> if the HARQ process is equal to the broadcast process; or
+- 1> if the timeAlignmentTimer , associated with the TAG containing the Serving Cell on which the HARQ feedback is to be transmitted, is stopped or expired:  
+2> not instruct the physical layer to generate acknowledgement(s) of the data in this TB.  
+1> else:  
+- 2> instruct the physical layer to generate acknowledgement(s) of the data in this TB.  
+The MAC entity shall ignore NDI received in all downlink assignments on PDCCH for its Temporary C-RNTI when determining if NDI on PDCCH for its C-RNTI has been toggled compared to the value in the previous transmission.  
+NOTE: If the MAC entity receives a retransmission with a TB size different from the last TB size signalled for this TB, the UE behavior is left up to UE implementation.
+
+--- Chunk 3 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 7.1 RNTI values / 
+| NOTE 1:                                       | The usage of MCS-C-RNTI is equivalent to that of C-RNTI in MAC procedures (except for the C-RNTI MAC CE). The MAC entity uses SL Semi-Persistent Scheduling V-RNTI to control semi-persistently scheduled | The usage of MCS-C-RNTI is equivalent to that of C-RNTI in MAC procedures (except for the C-RNTI MAC CE). The MAC entity uses SL Semi-Persistent Scheduling V-RNTI to control semi-persistently scheduled | The usage of MCS-C-RNTI is equivalent to that of C-RNTI in MAC procedures (except for the C-RNTI MAC CE). The MAC entity uses SL Semi-Persistent Scheduling V-RNTI to control semi-persistently scheduled | The usage of MCS-C-RNTI is equivalent to that of C-RNTI in MAC procedures (except for the C-RNTI MAC CE). The MAC entity uses SL Semi-Persistent Scheduling V-RNTI to control semi-persistently scheduled |
+
+--- Chunk 4 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.4 UL-SCH data transfer / 5.4.2 HARQ operation
+#### 5.4.2.2 HARQ process  
+Each HARQ process is associated with a HARQ buffer.  
+New transmissions are performed on the resource and with the MCS indicated on PDCCH or indicated in the Random Access Response (i.e. MAC RAR or fallbackRAR), or signalled in RRC or determined as specified in clause 5.1.2a for MSGA payload. Retransmissions are performed on the resource and, if provided, with the MCS indicated on PDCCH, or on the same resource and with the same MCS as was used for last made transmission attempt within a bundle, or on stored configured uplink grant resources and stored MCS when cg-RetransmissionTimer is configured. Retransmissions with the same HARQ process may be performed on any configured grant configuration if the configured grant configurations have the same TBS.  
+When cg-RetransmissionTimer is configured and the HARQ entity obtains a MAC PDU to transmit, the corresponding HARQ process is considered to be pending. For a configured uplink grant, configured with cg-RetransmissionTimer , each associated HARQ process is considered as not pending when:  
+- -a transmission is performed on that HARQ process and LBT failure indication is not received from lower layers; or  
+- -the configured uplink grant is initialised and this HARQ process is not associated with another active configured uplink grant; or
+- -the HARQ buffer for this HARQ process is flushed.  
+If the HARQ entity requests a new transmission for a TB, the HARQ process shall:  
+- 1> store the MAC PDU in the associated HARQ buffer;
+- 1> store the uplink grant received from the HARQ entity;
+- 1> generate a transmission as described below.  
+If the HARQ entity requests a retransmission for a TB, the HARQ process shall:  
+- 1> store the uplink grant received from the HARQ entity;
+- 1> generate a transmission as described below.  
+To generate a transmission for a TB, the HARQ process shall:  
+- 1> if the MAC PDU was obtained from the Msg3 buffer; or
+- 1> if the MAC PDU was obtained from the MSGA buffer; or
+- 1> if there is no measurement gap at the time of the transmission and, in case of retransmission, the retransmission does not collide with a transmission for a MAC PDU obtained from the Msg3 buffer or the MSGA buffer:
+- 2> if there are neither transmission of NR sidelink communication nor transmission of V2X sidelink communication at the time of the transmission; or
+- 2> if the transmission of the MAC PDU is prioritized over sidelink transmission or can be simultaneously performed with sidelink transmission:
+- 3> instruct the physical layer to generate a transmission according to the stored uplink grant.
+- If a HARQ process receives downlink feedback information, the HARQ process shall:
+- 1> stop the cg-RetransmissionTimer , if running;
+- 1> if acknowledgement is indicated:
+- 2> stop the configuredGrantTimer , if running.  
+If the configuredGrantTimer expires for a HARQ process, the HARQ process shall:  
+1> stop the cg-RetransmissionTimer , if running.  
+The transmission of the MAC PDU is prioritized over sidelink transmission or can be performed simultaneously with sidelink transmission if one of the following conditions is met:  
+- -if there are both a sidelink grant for transmission of NR sidelink communication and a configured grant for transmission of V2X sidelink communication on SL-SCH as described in clause 5.14.1.2.2 of TS 36.321 [22] at the time of the transmission, and neither the transmission of NR sidelink communication is prioritized as described in clause 5.22.1.3.1 nor the transmissions of V2X sidelink communication is prioritized as described in clause 5.4.2.2 of TS 36.321 [22]; or
+- -if there are both a sidelink grant for transmission of NR sidelink communication and a configured grant for transmission of V2X sidelink communication on SL-SCH as described in clause 5.14.1.2.2 of TS 36.321 [22] at the time of the transmission, and the value of the highest priority of the logical channel(s) in the MAC PDU is lower than ul-PrioritizationThres if ul-PrioritizationThres is configured; or
+- -if there are both a sidelink grant for transmission of NR sidelink communication and a configured grant for transmission of V2X sidelink communication on SL-SCH as described in clause 5.14.1.2.2 of TS 36.321 [22] at the time of the transmission, and the MAC entity is able to perform this UL transmission simultaneously with both the transmission of NR sidelink communication which is prioritized as described in clause 5.22.1.3.1 and  
+the transmissions of V2X sidelink communication which are prioritized as described in clause 5.14.1.2.2 of TS 36.321 [22]; or
+
+--- Chunk 5 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 5.3 DL-SCH data transfer / 5.3.1 DL Assignment reception
+## 5.3 DL-SCH data transfer  
+### 5.3.1 DL Assignment reception  
+Downlink assignments received on the PDCCH both indicate that there is a transmission on a DL-SCH for a particular MAC entity and provide the relevant HARQ information.  
+When the MAC entity has a C-RNTI, Temporary C-RNTI, or CS-RNTI, the MAC entity shall for each PDCCH occasion during which it monitors PDCCH and for each Serving Cell:  
+- 1> if a downlink assignment for this PDCCH occasion and this Serving Cell has been received on the PDCCH for the MAC entity's C-RNTI, or Temporary C-RNTI:  
+2> if this is the first downlink assignment for this Temporary C-RNTI:  
+3> consider the NDI to have been toggled.  
+- 2> if the downlink assignment is for the MAC entity's C-RNTI, and if the previous downlink assignment indicated to the HARQ entity of the same HARQ process was either a downlink assignment received for the MAC entity's CS-RNTI or a configured downlink assignment:  
+3> consider the NDI to have been toggled regardless of the value of the NDI.  
+- 2> indicate the presence of a downlink assignment and deliver the associated HARQ information to the HARQ entity.
+- 1> else if a downlink assignment for this PDCCH occasion has been received for this Serving Cell on the PDCCH for the MAC entity's CS-RNTI:
+- 2> if the NDI in the received HARQ information is 1:
+- 3> consider the NDI for the corresponding HARQ process not to have been toggled;
+- 3> indicate the presence of a downlink assignment for this Serving Cell and deliver the associated HARQ information to the HARQ entity.
+- 2> if the NDI in the received HARQ information is 0:
+- 3> if PDCCH contents indicate SPS deactivation:
+- 4> clear the configured downlink assignment for this Serving Cell (if any);
+- 4> if the timeAlignmentTimer , associated with the TAG containing the Serving Cell on which the HARQ feedback is to be transmitted, is running:
+- 5> indicate a positive acknowledgement for the SPS deactivation to the physical layer.
+- 3> else if PDCCH content indicates SPS activation:
+- 4> store the downlink assignment for this Serving Cell and the associated HARQ information as configured downlink assignment;
+- 4> initialise or re-initialise the configured downlink assignment for this Serving Cell to start in the associated PDSCH duration and to recur according to rules in clause 5.8.1;  
+For each Serving Cell and each configured downlink assignment, if configured and activated, the MAC entity shall:  
+- 1> if the PDSCH duration of the configured downlink assignment does not overlap with the PDSCH duration of a downlink assignment received on the PDCCH for this Serving Cell:
+- 2> instruct the physical layer to receive, in this PDSCH duration, transport block on the DL-SCH according to the configured downlink assignment and to deliver it to the HARQ entity;
+- 2> set the HARQ Process ID to the HARQ Process ID associated with this PDSCH duration;
+- 2> consider the NDI bit for the corresponding HARQ process to have been toggled;
+- 2> indicate the presence of a configured downlink assignment and deliver the stored HARQ information to the HARQ entity.  
+For configured downlink assignments without harq-ProcID-Offset , the HARQ Process ID associated with the slot where the DL transmission starts is derived from the following equation:  
+HARQ Process ID = [floor (CURRENT\_slot × 10 / ( numberOfSlotsPerFrame × periodicity ))] modulo nrofHARQProcesses  
+where CURRENT\_slot = [(SFN × numberOfSlotsPerFrame ) + slot number in the frame] and numberOfSlotsPerFrame refers to the number of consecutive slots per frame as specified in TS 38.211 [8].  
+- NOTE: In case of unaligned SFN across carriers in a cell group, the SFN of the concerned Serving Cell is used to calculate the HARQ Process ID used for configured downlink assignments.  
+For configured downlink assignments with harq-ProcID-Offset , the HARQ Process ID associated with the slot where the DL transmission starts is derived from the following equation:  
+HARQ Process ID = [floor (CURRENT\_slot / periodicity )] modulo nrofHARQ-Processes + harq-ProcID-Offset  
+where CURRENT\_slot = [(SFN × numberOfSlotsPerFrame ) + slot number in the frame] and numberOfSlotsPerFrame refers to the number of consecutive slots per frame as specified in TS 38.211 [8].  
+When the MAC entity needs to read BCCH, the MAC entity may, based on the scheduling information from RRC:  
+1> if a downlink assignment for this PDCCH occasion has been received on the PDCCH for the SI-RNTI;  
+- 2> indicate a downlink assignment and redundancy version for the dedicated broadcast HARQ process to the HARQ entity.
+
+--- Chunk 6 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 3.2 Abbreviations / 
+## 3.2 Abbreviations  
+For the purposes of the present document, the abbreviations given in TR 21.905 [1] and the following apply. An abbreviation defined in the present document takes precedence over the definition of the same abbreviation, if any, in TR 21.905 [1].  
+| AP           | Aperiodic                                              |
+|--------------|--------------------------------------------------------|
+| BFR          | Beam Failure Recovery                                  |
+| BSR          | Buffer Status Report                                   |
+| BWP          | Bandwidth Part                                         |
+| CE           | Control Element                                        |
+| CG           | Cell Group                                             |
+| CI-RNTI      | Cancellation Indication RNTI                           |
+| CSI          | Channel State Information                              |
+| CSI-IM       | CSI Interference Measurement                           |
+| CSI-RS       | CSI Reference Signal                                   |
+| CS-RNTI      | Configured Scheduling RNTI                             |
+| DAPS         | Dual Active Protocol Stack                             |
+| DCP          | DCI with CRC scrambled by PS-RNTI                      |
+| DL-PRS       | DownLink-Positioning Reference Signal                  |
+| IAB          | Integrated Access and Backhaul                         |
+| INT-RNTI     | Interruption RNTI                                      |
+| LBT          | Listen Before Talk                                     |
+| LCG          | Logical Channel Group                                  |
+| LCP          | Logical Channel Prioritization                         |
+| MCG          | Master Cell Group                                      |
+| NUL          | Normal Uplink                                          |
+| NZP CSI-RS   | Non-Zero Power CSI-RS                                  |
+| PDB          | Packet Delay Budget                                    |
+| PHR          | Power Headroom Report                                  |
+| PS-RNTI      | Power Saving RNTI                                      |
+| PTAG         | Primary Timing Advance Group                           |
+| QCL          | Quasi-colocation                                       |
+| RS           | Reference Signal                                       |
+| SCG          | Secondary Cell Group                                   |
+| SFI-RNTI     | Slot Format Indication RNTI                            |
+| SI           | System Information                                     |
+| SL-RNTI      | Sidelink RNTI                                          |
+| SLCS-RNTI    | Sidelink Configured Scheduling RNTI                    |
+| SpCell       | Special Cell                                           |
+| SP           | Semi-Persistent                                        |
+| SP-CSI-RNTI  | Semi-Persistent CSI RNTI                               |
+| SPS          | Semi-Persistent Scheduling                             |
+| SR           | Scheduling Request                                     |
+| SS           | Synchronization Signals                                |
+| SSB          | Synchronization Signal Block                           |
+| STAG         | Secondary Timing Advance Group                         |
+| SUL          | Supplementary Uplink                                   |
+| TAG          | Timing Advance Group                                   |
+| TCI          | Transmission Configuration Indicator                   |
+| TPC-SRS-RNTI | Transmit Power Control-Sounding Reference Symbols-RNTI |
+| V2X          | Vehicle-to-Everything                                  |  
+ZP CSI-RS  
+Zero Power CSI-RS
+
+--- Chunk 7 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 7.1 RNTI values / 
+## 7.1 RNTI values  
+RNTI values are presented in Table 7.1-1.  
+Table 7.1-1: RNTI values.  
+| Value (hexa-decimal)   | RNTI                                                                                                                                                                                                                                     |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0000                   | N/A                                                                                                                                                                                                                                      |
+| 0001-FFF2              | RA-RNTI, MSGB-RNTI, Temporary C-RNTI, C-RNTI, CI-RNTI, MCS-C-RNTI, CS-RNTI, TPC-PUCCH-RNTI, TPC-PUSCH-RNTI, TPC-SRS-RNTI, INT-RNTI, SFI-RNTI, SP-CSI-RNTI, PS-RNTI, SL-RNTI, SLCS-RNTI SL Semi-Persistent Scheduling V-RNTI, and AI-RNTI |
+| FFF3-FFFD              | Reserved                                                                                                                                                                                                                                 |
+| FFFE                   | P-RNTI                                                                                                                                                                                                                                   |
+| FFFF                   | SI-RNTI                                                                                                                                                                                                                                  |  
+Table 7.1-2: RNTI usage.  
+| RNTI                                          | RNTI                                                                                                                                                                                                      | Usage                                                                                                                                                                                                     | Transport Channel                                                                                                                                                                                         | Logical Channel                                                                                                                                                                                           |
+|-----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| P-RNTI                                        | P-RNTI                                                                                                                                                                                                    | Paging and System Information change notification                                                                                                                                                         | PCH                                                                                                                                                                                                       | PCCH                                                                                                                                                                                                      |
+
+--- Chunk 8 ---
+Source: docs_md/mac-usage_example_removed.md | Section: Configuration of the MAC / MAC scheduler-related configuration options
+transmissions (k1 and k2 in 3GPP spec)
+* `ul_prbblacklist`: PRBs that should not be used for UL scheduling. Cf with
+parameter `ul_prbblack_SNR_threshold` that does a similar thing based on
+measurements
+* `force_256qam_off` (default 0=false): flag whether to disable 256QAM (limit to
+64QAM) in DL
+* `force_UL256qam_off` (default 0=false): flag whether to disable 256QAM (limit to
+64QAM) in DL
+* `disable_harq` (default 0=false): flag whether to disable HARQ completely
+(useful for NTN operation, see <../RUNMODEM.md>). **this is a Rel-17 feature
+and you need to have a capable UE for this**
+* `use_deltaMCS` (default 0=false): flag whether to enable deltaMCS
+* `num_dlharq` (default 16): number of HARQ processes to use in DL (other valid
+options are 2, 4, 6, 8, 10, 12, 32; **32 is a Rel-17 features**)
+* `num_ulharq` (default 16): as `num_dlharq` for UL (other valid option is 32;
+**32 is i Rel-17 feature**)
+- `du_sibs` (default `[]`): list of SIBs to transmit in the cell. Currently,
+SIB19 (for NTN) is supported.  
+| DL MIMO                        |`do_CSIRS`|`CSI_report_type`| CSI report Quantity                               |
+| ------------------------------ | -------- | --------------- | --------------------------------------------------|
+| any                            |   any    |  `ssb_rsrp`     | SSB-RSRP                                          |
+| any                            |   0      |  `cri_rsrp`     | SSB-RSRP (no CSI-RS configured)                   |
+| any                            |   1      |  `cri_rsrp`     | CRI-RSRP                                          |
+| any                            |   any    |  `ssb_sinr`     | SSB-SINR                                          |
+| ON (`pdsch_AntennaPorts` > 1)  |   1      |  any            | cri-RI-PMI-CQI                                    |  
+Note that activating `cri-RI-PMI-CQI` will result in that report to be produced
+in addition to either `SSB-SINR`, `SSB-RSRP` or `CRI-RSRP`.
+DL-MIMO is configured using following parameters:
+`pdsch_AntennaPorts_XP` , `pdsch_AntennaPorts_N1` , `pdsch_AntennaPorts_N2`, `maxMIMO_layers`
+(see also [`RUNMODEM.md`](../RUNMODEM.md))
+
+--- Chunk 9 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: 7.1 RNTI values / 
+| C-RNTI, MCS-C- RNTI                           | C-RNTI, MCS-C- RNTI                                                                                                                                                                                       | Dynamically scheduled unicast transmission                                                                                                                                                                | UL-SCH                                                                                                                                                                                                    | DCCH, DTCH                                                                                                                                                                                                |
+| C-RNTI                                        | C-RNTI                                                                                                                                                                                                    | Dynamically scheduled unicast transmission                                                                                                                                                                | DL-SCH                                                                                                                                                                                                    | CCCH, DCCH, DTCH                                                                                                                                                                                          |
+| MCS-C-RNTI                                    | MCS-C-RNTI                                                                                                                                                                                                | Dynamically scheduled unicast transmission                                                                                                                                                                | DL-SCH                                                                                                                                                                                                    | DCCH, DTCH                                                                                                                                                                                                |
+| C-RNTI                                        | C-RNTI                                                                                                                                                                                                    | Triggering of PDCCH ordered random access                                                                                                                                                                 | N/A                                                                                                                                                                                                       | N/A                                                                                                                                                                                                       |
+| CS-RNTI                                       | CS-RNTI                                                                                                                                                                                                   | Configured scheduled unicast transmission (activation, reactivation and retransmission)                                                                                                                   | DL-SCH, UL-SCH                                                                                                                                                                                            | DCCH, DTCH                                                                                                                                                                                                |
+
+--- Chunk 10 ---
+Source: docs_md/ts_138321v160100p.pdf.md | Section: The PHR MAC CEs are defined as follows: / 
+## The PHR MAC CEs are defined as follows:  
+- -Ci: This field indicates the presence of a PH field for the Serving Cell with ServCellIndex i as specified in TS 38.331 [5]. The Ci field set to 1 indicates that a PH field for the Serving Cell with ServCellIndex i is reported. The Ci field set to 0 indicates that a PH field for the Serving Cell with ServCellIndex i is not reported;
+- -R: Reserved bit, set to 0;
+- -V: This field indicates if the PH value is based on a real transmission or a reference format. For Type 1 PH, the V field set to 0 indicates real transmission on PUSCH and the V field set to 1 indicates that a PUSCH reference format is used. For Type 2 PH, the V field set to 0 indicates real transmission on PUCCH and the V field set to 1 indicates that a PUCCH reference format is used. For Type 3 PH, the V field set to 0 indicates real transmission on SRS and the V field set to 1 indicates that an SRS reference format is used. Furthermore, for Type 1, Type 2, and Type 3 PH, the V field set to 0 indicates the presence of the octet containing the associated PCMAX,f,c field, and the V field set to 1 indicates that the octet containing the associated PCMAX,f,c field is omitted;
+- -Power Headroom (PH): This field indicates the power headroom level. The length of the field is 6 bits. The reported PH and the corresponding power headroom levels are shown in Table 6.1.3.8-1 (the corresponding measured values in dB for the NR Serving Cell are specified in TS 38.133 [11] while the corresponding measured values in dB for the E-UTRA Serving Cell are specified in TS 36.133 [12]);
+- -P: This field indicates whether the MAC entity applies power backoff due to power management (as allowed by P-MPRc as specified in TS 38.101-1 [14], TS 38.101-2 [15], and TS 38.101-3 [16]). The MAC entity shall set the P field to 1 if the corresponding PCMAX,f,c field would have had a different value if no power backoff due to power management had been applied;  
+̃  
+- -PCMAX,f,c: If present, this field indicates the PCMAX,f,c (as specified in TS 38.213 [6]) for the NR Serving Cell and the PCMAX,c or P CMAX,c (as specified in TS 36.213 [17]) for the E-UTRA Serving Cell used for calculation of the preceding PH field. The reported PCMAX,f,c and the corresponding nominal UE transmit power levels are shown in Table 6.1.3.8-2 (the corresponding measured values in dBm for the NR Serving Cell are specified in TS 38.133 [11] while the corresponding measured values in dBm for the E-UTRA Serving Cell are specified in TS 36.133 [12]).  
+Figure 6.1.3.9-1: Multiple Entry PHR MAC CE with the highest ServCellIndex of Serving Cell with configured uplink is less than 8  
+| C 7   | C 6   | C 5                                         | C 4                                         | C 3                                         | C 2                                         | C 1                                         | R                                           |
+|-------|-------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|
+| P     | V     | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) | PH (Type 2, SpCell of the other MAC entity) |
+| R     | R     | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                | P CMAX,f,c 1                                |
+| P     | V     | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          | PH (Type 1, PCell)                          |
+| R     | R     | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                | P CMAX,f,c 2                                |
+| P     | V     | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 | PH (Type X, Serving Cell 1)                 |

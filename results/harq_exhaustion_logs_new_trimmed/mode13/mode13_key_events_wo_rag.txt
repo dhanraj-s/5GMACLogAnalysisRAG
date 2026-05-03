@@ -1,0 +1,5 @@
+1. [MAC ][0.404500] DL HARQ | RNTI 1 | PID 12 | NACK | Retx 0
+2. [MAC ][0.405500] DL HARQ | RNTI 1 | PID 15 | NACK | Retx 1
+3. [MAC ][0.407000] DL HARQ | RNTI 1 | PID 12 | NACK | Retx 1
+4. [MAC ][0.410500] DL HARQ | RNTI 1 | PID 15 | NACK | Retx 3
+5. [MAC ][0.404500] DL HARQ | RNTI 1 | PID 12 | NACK | Retx 0 *** HARQ EXHAUSTED → scheduling stall
