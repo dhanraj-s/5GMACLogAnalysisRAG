@@ -1,13 +1,34 @@
+import os
+import sys
+import json
 import pickle
 from langchain_community.retrievers import BM25Retriever
 from langchain_classic.retrievers import EnsembleRetriever
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 
-PERSIST_DIR = 'db/chroma_db/'
-CHUNKS_PATH = 'db/chunks.pkl'
-EMBEDDING_MODEL = 'qwen3-embedding:4b'
-OLLAMA_ADDR = 'http://localhost:11434'
+# --- Load Configuration ---
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../configs/config.json')
+
+try:
+    with open(CONFIG_PATH, 'r', encoding='utf-8') as config_file:
+        config = json.load(config_file)
+except FileNotFoundError:
+    print(f"Error: Configuration file not found at {CONFIG_PATH}")
+    print("Please create the configuration file before running.")
+    sys.exit(1)
+
+# Extract parameters from config
+OLLAMA_ADDR = config.get('OLLAMA_ADDR', 'http://localhost:11434')
+EMBEDDING_MODEL = config.get('EMBEDDING_MODEL', 'qwen3-embedding:4b')
+
+# Resolve database paths relative to this script's location
+DB_DIR = config.get('DB_DIR', '../db')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RESOLVED_DB_DIR = os.path.normpath(os.path.join(BASE_DIR, DB_DIR))
+
+PERSIST_DIR = os.path.join(RESOLVED_DB_DIR, 'chroma_db')
+CHUNKS_PATH = os.path.join(RESOLVED_DB_DIR, 'chunks.pkl')
 
 def load_retriever(
     persist_dir=PERSIST_DIR,
@@ -17,6 +38,17 @@ def load_retriever(
     bm25_weight=0.3,
     vector_weight=0.7
 ):
+    # --- Graceful Exit Checks ---
+    if not os.path.exists(chunks_path):
+        print(f"\n[!] Error: Required chunks file not found at: {chunks_path}")
+        print("[!] Please run `scripts/ingestion_pipeline.py` to build the database before attempting retrieval.\n")
+        sys.exit(1)
+        
+    if not os.path.exists(persist_dir):
+        print(f"\n[!] Error: Chroma vector database not found at: {persist_dir}")
+        print("[!] Please run `scripts/ingestion_pipeline.py` to build the database before attempting retrieval.\n")
+        sys.exit(1)
+
     print('Loading chunks for BM25...')
     with open(chunks_path, 'rb') as f:
         chunks = pickle.load(f)
@@ -50,8 +82,6 @@ def load_retriever(
     print('Hybrid retriever ready.')
     return hybrid_retriever
 
-
-
 def retrieve(query, retriever):
     print(f'\nQuery: "{query}"')
     docs = retriever.invoke(query)
@@ -64,7 +94,6 @@ def retrieve(query, retriever):
         print(f'  Content: {doc.page_content}')
         print()
     return docs
-
 
 if __name__ == '__main__':
     retriever = load_retriever()
