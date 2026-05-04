@@ -128,3 +128,4 @@ Key observations:
 
 Used LLMs to integrate individual scripts into a clean pipeline utilizing config files for setting parameters, implementing caching to save API credits, and building new scripts by extending the code in prior scripts.
 
+After writing the rough scripts that would save directly in the working directory, would use hardcoded paths, etc. used Gemini to couple all those scripts in a single workflow utilizing `config.json` for setting paths, and model names and saving the outputs cleanly into the `results/` directory.
