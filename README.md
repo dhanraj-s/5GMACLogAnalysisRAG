@@ -40,13 +40,13 @@ Approach 2 performs better according to our results.
 ```
 export GROQ_API_KEY=<your-groq-api-key-free-tier-works>
 
-python3 scripts/full_pipeline.py --log_file log_files/du_mac_logs_3.txt --groq_log_file log_files/du_mac_logs_3_trimmed.txt
+python3 scripts/full_pipeline.py --mode all --log_file log_files/du_mac_logs_3.txt --groq_log_file log_files/du_mac_logs_3_trimmed.txt
 
-python3 scripts/full_pipeline.py --log_file log_files/harq_exhaustion_logs_new_trimmed.txt --groq_log_file log_files/harq_exhaustion_logs_new_trimmed.txt
+python3 scripts/full_pipeline.py --mode all --log_file log_files/harq_exhaustion_logs_new_trimmed.txt --groq_log_file log_files/harq_exhaustion_logs_new_trimmed.txt
 
-python3 scripts/mode13_pipeline.py --log_file log_files/du_mac_logs_3.txt --groq_log_file log_files/du_mac_logs_3_trimmed.txt
+python3 scripts/mode13_pipeline.py --mode all --log_file log_files/du_mac_logs_3.txt --groq_log_file log_files/du_mac_logs_3_trimmed.txt
 
-python3 scripts/mode13_pipeline.py --log_file log_files/harq_exhaustion_logs_new_trimmed.txt --groq_log_file log_files/harq_exhaustion_logs_new_trimmed.txt
+python3 scripts/mode13_pipeline.py --mode all --log_file log_files/harq_exhaustion_logs_new_trimmed.txt --groq_log_file log_files/harq_exhaustion_logs_new_trimmed.txt
 ```
 
 6. Results will be stored in the `results/` directory. 
