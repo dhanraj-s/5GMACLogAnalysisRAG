@@ -108,4 +108,23 @@ To prevent cross-contamination and keep analysis clean, all pipeline outputs are
 
 ## 3. Results Summary
 
-## 4. LLM usage declaration
+Key observations:
+
+1. Generic prompt does not reveal causal chain, even with RAG (both forms concat+LLM translation)
+
+2. LLM translated retrieval query built directly from logs is either incorrect (`results/du_mac_logs_3/shared_translated_query.txt`) or nonsensical (`results/harq_exhaustion_logs_new_trimmed/shared_translated_query.txt`).
+
+3. LLM extracted top key events are often inaccuurate (`results/harq_exhaustion_logs_new_trimmed/mode13/mode13_key_events_wo_rag.txt`)
+
+4. A targeted prompt built using extracted key events performs much better than RAG in doing RCA.
+
+5. Classical NLP (scoring using hardcoded vocabulary, scoring using vocabulary learned from Chi2) based methods and sentence embedding based methods are better at extracting key events from the logs.  
+
+6. RAG provides almost no improvement to key event extraction based methods.
+
+7. Instead of RAG, it would be far better to improve key event extraction. Look into developing specialized LLM agents for key event extraction from logs (as existing LLMs are bad at this task, see point 2 above). Use this to enrich the prompt to obtain a good analysis.
+
+## 4. LLM usage disclosure
+
+Used LLMs to integrate individual scripts into a clean pipeline utilizing config files for setting parameters, implementing caching to save API credits, and building new scripts by extending the code in prior scripts.
+
