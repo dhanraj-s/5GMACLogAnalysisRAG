@@ -30,6 +30,19 @@ We attempt two things:
 
 Approach 2 performs better according to our results. 
 
+### Directory Structure:
+
+1. `configs/`: contains config.json to set parameters like default log file paths, model names, etc.
+2. `demo/`: contains demo videos
+3. `docs/`: slides, report
+4. `experiemnts/ns3_scenarios`: ns-3 scenario code
+5. `log_files/`: log files used for this project
+6. `rag_docs`: input files for RAG
+7. `rag_docs_md`: source docuements converted to markdown.
+8. `results`: all artifacts of all experiments.
+9. `scripts`: all main scripts -- to run to create vector db, convert to markdown, run modes 1-12, run mode 13
+10. `src`: core source modules, code for the techniques: sentence clustering, static mining, dynamic mining, retrieval.
+
 ## 2. Setup Instructions / How to run
 
 1. Create a virtual environment and install dependencies using `pip` from `requirements.txt`
