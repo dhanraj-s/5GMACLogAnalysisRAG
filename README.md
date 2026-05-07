@@ -134,7 +134,7 @@ Used LLMs to integrate individual scripts into a clean pipeline utilizing config
 
 After writing the rough scripts that would save directly in the working directory, would use hardcoded paths, etc. used Gemini to couple all those scripts in a single workflow utilizing `config.json` for setting paths, and model names and saving the outputs cleanly into the `results/` directory.
 
-Prompts: "Integrate these scripts into a single pipeline script that will run all modes and save all relevant artifacts: <artifact list mentioned here>", "Add config file to ensure I don't have to use hardcoded paths, model names, etc. and can load them from this file.", "How can I extract events from logs?", "How can I obtain words that skew towards a class?", "What is chi-2 test?"
+Prompts: "Integrate these scripts into a single pipeline script that will run all modes and save all relevant artifacts: <artifact list mentioned here>", "Add config file to ensure I don't have to use hardcoded paths, model names, etc. and can load them from this file.", "How can I extract events from logs?", "What is Drain3?", "How can I obtain words that skew towards a class?", "What is chi-2 test?"
 
 Validation: By confirming with online forum links, documentations, research papers, etc. See below for references that were used to cross-verify LLM outputs.
 
