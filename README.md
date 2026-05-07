@@ -49,6 +49,8 @@ python3 scripts/mode13_pipeline.py --log_file log_files/du_mac_logs_3.txt --groq
 python3 scripts/mode13_pipeline.py --log_file log_files/harq_exhaustion_logs_new_trimmed.txt --groq_log_file log_files/harq_exhaustion_logs_new_trimmed.txt
 ```
 
+To run 
+
 6. Results will be stored in the `results/` directory. 
 
 `results/<log_filename>/<mode_num>/` contains the artifacts from running the method (or mode) `<mode_num>` on log file `<log_filename>`. The different modes are explained below:
@@ -126,9 +128,17 @@ Key observations:
 
 ## 4. LLM usage disclosure
 
+LLMs used: Claude, Gemini
+
 Used LLMs to integrate individual scripts into a clean pipeline utilizing config files for setting parameters, implementing caching to save API credits, and building new scripts by extending the code in prior scripts.
 
 After writing the rough scripts that would save directly in the working directory, would use hardcoded paths, etc. used Gemini to couple all those scripts in a single workflow utilizing `config.json` for setting paths, and model names and saving the outputs cleanly into the `results/` directory.
+
+Prompts: "Integrate these scripts into a single pipeline script that will run all modes and save all relevant artifacts: <artifact list mentioned here>", "Add config file to ensure I don't have to use hardcoded paths, model names, etc. and can load them from this file.", "How can I extract events from logs?", "How can I obtain words that skew towards a class?", "What is chi-2 test?"
+
+Validation: By confirming with online forum links, documentations, research papers, etc. See below for references that were used to cross-verify LLM outputs.
+
+Documentation: See references below.
 
 ## 5. References
 
