@@ -6,7 +6,7 @@ This project is motivated by the paper:
 
 *LLM-5GMAC: Performance Optimization in O-RAN Split 7.2 Using LLM-Based MAC-Layer Log Analysis*, 
 OpenRan '25: Proceedings of the 2nd ACM Workshop on Open and AI RAN
-([https://dl.acm.org/doi/10.1145/3737900.3770164](url))
+(https://dl.acm.org/doi/10.1145/3737900.3770164)
 
 The authors provide 5G MAC logs to an LLM for root cause analysis. The key finding is that of prompt dependency. General prompts yield generic, unrelated insights into system behaviour from the logs. However, targeted prompts leverage the LLM's intelligence to build a proper, complete causal chain capturing multi-layer dependencies and provide a complete RCA.
 
@@ -173,6 +173,6 @@ Documentation: See references below.
 
 ## 5. References
 
-1. *Anomaly Detection in Log Files Using Selected Natural Language Processing Methods*: [https://www.mdpi.com/2076-3417/12/10/5089](url)
-2. *Find best words by chi squared*: [https://github.com/gersonUrban/find_best_words_with_chi2](url)
-3. *Perform Chi-2 Feature Selection on TF and TF\*IDF vectors*: [https://stackoverflow.com/questions/14573030/perform-chi-2-feature-selection-on-tf-and-tfidf-vectors?rq=3](url)
+1. *Anomaly Detection in Log Files Using Selected Natural Language Processing Methods*: https://www.mdpi.com/2076-3417/12/10/5089
+2. *Find best words by chi squared*: https://github.com/gersonUrban/find_best_words_with_chi2
+3. *Perform Chi-2 Feature Selection on TF and TF\*IDF vectors*: https://stackoverflow.com/questions/14573030/perform-chi-2-feature-selection-on-tf-and-tfidf-vectors?rq=3
