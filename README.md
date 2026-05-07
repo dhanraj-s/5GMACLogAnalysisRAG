@@ -134,4 +134,4 @@ After writing the rough scripts that would save directly in the working director
 
 1. *Anomaly Detection in Log Files Using Selected Natural Language Processing Methods*: [https://www.mdpi.com/2076-3417/12/10/5089](url)
 2. *Find best words by chi squared*: [https://github.com/gersonUrban/find_best_words_with_chi2](url)
-3. *Perform Chi-2 Feature Selection on TF and TF*IDF vectors*: [https://stackoverflow.com/questions/14573030/perform-chi-2-feature-selection-on-tf-and-tfidf-vectors?rq=3](url)
+3. *Perform Chi-2 Feature Selection on TF and TF\*IDF vectors* : [https://stackoverflow.com/questions/14573030/perform-chi-2-feature-selection-on-tf-and-tfidf-vectors?rq=3](url)
