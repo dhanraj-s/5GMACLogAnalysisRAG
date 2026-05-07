@@ -129,3 +129,8 @@ Key observations:
 Used LLMs to integrate individual scripts into a clean pipeline utilizing config files for setting parameters, implementing caching to save API credits, and building new scripts by extending the code in prior scripts.
 
 After writing the rough scripts that would save directly in the working directory, would use hardcoded paths, etc. used Gemini to couple all those scripts in a single workflow utilizing `config.json` for setting paths, and model names and saving the outputs cleanly into the `results/` directory.
+
+## 5. References
+
+1. *Anomaly Detection in Log Files Using Selected Natural Language Processing Methods*: [https://www.mdpi.com/2076-3417/12/10/5089](url)
+2. *Find best words by chi squared*: [https://github.com/gersonUrban/find_best_words_with_chi2](url)
