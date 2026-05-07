@@ -49,6 +49,24 @@ python3 scripts/mode13_pipeline.py --log_file log_files/du_mac_logs_3.txt --groq
 python3 scripts/mode13_pipeline.py --log_file log_files/harq_exhaustion_logs_new_trimmed.txt --groq_log_file log_files/harq_exhaustion_logs_new_trimmed.txt
 ```
 
+To run the ns-3 scenario:
+1. Place experiments/ns3_scenarios/Claude_oai_nr_logger.h and experiments/Claude_harq-exhaustion-5gnr.cc in scratch directory of ns3-allinone-3.47/ns-3.47
+2. To set up ns3-allinone-3.47, use the following:
+```
+# 1. Download the bundle
+wget https://www.nsnam.org/releases/ns-allinone-3.47.tar.bz2
+tar xfj ns-allinone-3.47.tar.bz2
+cd ns-allinone-3.47/ns-3.47
+
+# 2. Configure (Ensuring examples are enabled)
+./ns3 configure --enable-examples --enable-tests
+
+# 3. Build (This may take 5-10 minutes)
+./ns3 build
+```
+4. Go to ns-allinone-3.47/ns-3.47 and run the command `./ns3 run scratch/harq-exhaustion-5gnr.cc`
+5. Can redirect the logs to an output file: `./ns3 run scratch/harq-exhaustion-5gnr.cc > harq_exhaustion_logs.txt`
+
 To run 
 
 6. Results will be stored in the `results/` directory. 
