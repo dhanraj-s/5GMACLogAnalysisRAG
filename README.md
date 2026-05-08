@@ -33,7 +33,7 @@ Approach 2 performs better according to our results.
 ### Directory Structure:
 
 1. `configs/`: contains config.json to set parameters like default log file paths, model names, etc.
-2. `demo/`: contains demo videos, prompts used, clustering output screenshot.
+2. `demo/`: contains demo videos, **prompts used**, clustering output screenshot.
 3. `docs/`: slides, report
 4. `experiemnts/ns3_scenarios`: ns-3 scenario code
 5. `log_files/`: log files used for this project
