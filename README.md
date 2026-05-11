@@ -177,3 +177,4 @@ Documentation: See references below.
 2. *Find best words by chi squared*: https://github.com/gersonUrban/find_best_words_with_chi2
 3. *Perform Chi-2 Feature Selection on TF and TF\*IDF vectors*: https://stackoverflow.com/questions/14573030/perform-chi-2-feature-selection-on-tf-and-tfidf-vectors?rq=3
 4. *Chi-2 for finding class-dependent words*: https://ethen8181.github.io/machine-learning/text_classification/chisquare.html
+5. *Using feature selection methods in text classification*: https://blog.datumbox.com/using-feature-selection-methods-in-text-classification/
